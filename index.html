@@ -1,899 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#075e54">
+    <link rel="manifest" href="manifest.json">
+    <title>PAYCEIPT</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        :root {
+            --wa-dark: #075e54;
+            --wa-green: #25d366;
+            --wa-light: #dcf8c6;
+            --wa-bg: #ffffff;
+            --wa-gray: #f5f5f5;
+            --wa-border: #e8e8e8;
+            --wa-text: #111;
+            --wa-sub: #667781;
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
 
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{--wa:#00a884;--wad:#128c7e;--wab:#075e54;--msg-bg:#efeae2;--sent:#d9fdd3;--recv:#fff}
-.phone{width:360px;height:680px;background:#111;border-radius:36px;margin:0 auto;padding:8px;position:relative}
-.screen{width:100%;height:100%;background:#fff;border-radius:28px;overflow:hidden;display:flex;flex-direction:column;position:relative}
-.status{height:24px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;font-size:10px;font-weight:600;background:var(--wa);color:#fff;flex-shrink:0}
-.view{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden;background:#fff}
-.view.on{display:flex}
-.topbar{height:54px;background:var(--wa);display:flex;align-items:center;padding:0 10px;gap:8px;flex-shrink:0;color:#fff}
-.topbar-title{flex:1;font-size:17px;font-weight:700}
-.topbar-sub{flex:1;display:flex;flex-direction:column;justify-content:center}
-.topbar-sub .t1{font-size:15px;font-weight:600}
-.topbar-sub .t2{font-size:11px;opacity:.8}
-.ti-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%;transition:background .15s}
-.ti-btn:hover{background:rgba(255,255,255,0.15)}
-.ti-btn .ti{font-size:18px;color:#fff}
-.av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
-.scroll{flex:1;overflow-y:auto}
-.scroll::-webkit-scrollbar{width:3px}
-.scroll::-webkit-scrollbar-thumb{background:#ccc;border-radius:2px}
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-/* HOME */
-.home-splash{background:var(--wa);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px}
-.splash-logo{width:72px;height:72px;background:#fff;border-radius:20px;display:flex;align-items:center;justify-content:center}
-.splash-logo .ti{font-size:40px;color:var(--wa)}
-.splash-title{color:#fff;font-size:22px;font-weight:700;text-align:center}
-.splash-sub{color:rgba(255,255,255,.82);font-size:12px;text-align:center;line-height:1.55;max-width:270px}
-.widget-row{width:100%;display:flex;gap:10px}
-.w-box{flex:1;background:rgba(255,255,255,.18);border-radius:14px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;border:1.5px solid rgba(255,255,255,.25)}
-.w-box .ti{font-size:28px;color:#fff}
-.w-box .wt{font-size:13px;color:#fff;font-weight:700}
-.w-box .ws{font-size:10px;color:rgba(255,255,255,.75);text-align:center}
-.go-btn{background:#fff;color:var(--wa);border:none;border-radius:24px;padding:13px 0;font-size:14px;font-weight:700;cursor:pointer;width:100%}
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background: var(--wa-bg);
+            color: var(--wa-text);
+            font-size: 14px;
+            -webkit-font-smoothing: antialiased;
+        }
 
-/* MAIN TABS */
-.main-tabs{display:flex;background:var(--wa);flex-shrink:0}
-.mtab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px 0;cursor:pointer;border-bottom:2.5px solid transparent;transition:all .18s}
-.mtab.on{border-bottom-color:#fff}
-.mtab .ti{font-size:18px;color:rgba(255,255,255,.65)}
-.mtab.on .ti{color:#fff}
-.mtab span{font-size:9px;color:rgba(255,255,255,.65);font-weight:600}
-.mtab.on span{color:#fff}
-.tab-content{position:relative;flex:1;overflow:hidden}
-.tc{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden}
-.tc.on{display:flex}
+        .app {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            height: 100dvh;
+        }
 
-/* CHAT LIST */
-.chat-list-scroll{overflow-y:auto;flex:1}
-.ci{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:.5px solid #f2f2f2;cursor:pointer}
-.ci:hover{background:#f9f9f9}
-.ci-info{flex:1;min-width:0}
-.ci-name{font-size:14px;font-weight:600;color:#111;margin-bottom:2px}
-.ci-prev{font-size:12px;color:#667781;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ci-meta{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
-.ci-time{font-size:10px;color:#667781}
-.bdg{background:var(--wa);color:#fff;font-size:9px;font-weight:700;border-radius:10px;padding:2px 5px;min-width:16px;text-align:center}
+        /* ── STATUS BAR + HEADER ── */
+        .status-bar {
+            height: var(--safe-top);
+            background: var(--wa-dark);
+            flex-shrink: 0;
+        }
 
-/* CALLS TAB */
-.call-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:.5px solid #f5f5f5}
-.call-info{flex:1}
-.call-name{font-size:14px;font-weight:600;color:#111}
-.call-detail{font-size:11px;color:#667781;margin-top:1px}
-.call-type{font-size:12px;color:#667781}
-.call-icon-btn{width:34px;height:34px;border-radius:50%;background:#e8f5e9;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.call-icon-btn .ti{font-size:16px;color:var(--wa)}
+        .header {
+            background: var(--wa-dark);
+            color: #fff;
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
 
-/* STATUS TAB */
-.status-my{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:.5px solid #f5f5f5;cursor:pointer}
-.status-section-label{font-size:11px;font-weight:700;color:#667781;padding:10px 14px 4px;background:#f9f9f9}
-.status-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer}
-.status-ring{border-radius:50%;padding:2.5px;background:linear-gradient(135deg,var(--wa),#128c7e)}
-.status-ring-seen{background:#ccc}
-.status-inner{background:#fff;border-radius:50%;padding:2px}
-.status-info{flex:1}
-.status-name{font-size:14px;font-weight:600;color:#111}
-.status-time{font-size:11px;color:#667781}
+        .header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+        .header-icons { display: flex; gap: 18px; font-size: 20px; }
 
-/* SETTINGS TAB */
-.settings-profile{display:flex;align-items:center;gap:12px;padding:14px;background:#fff;border-bottom:.5px solid #f0f0f0;cursor:pointer}
-.settings-profile-info .sn{font-size:16px;font-weight:600;color:#111}
-.settings-profile-info .ss{font-size:12px;color:#667781}
-.settings-section{margin-top:8px;background:#fff}
-.settings-item{display:flex;align-items:center;gap:12px;padding:13px 14px;border-bottom:.5px solid #f8f8f8;cursor:pointer}
-.settings-item .ti{font-size:20px;color:#667781}
-.settings-item-text{flex:1}
-.settings-item-title{font-size:14px;color:#111}
-.settings-item-sub{font-size:11px;color:#999;margin-top:1px}
-.settings-item-right{font-size:12px;color:#aaa}
-.settings-section-title{font-size:11px;font-weight:700;color:var(--wa);padding:10px 14px 4px;background:#f9f9f9}
+        /* ── TOP TABS ── */
+        .top-tabs {
+            background: var(--wa-dark);
+            display: flex;
+            flex-shrink: 0;
+        }
 
-/* CHAT VIEW */
-.msgs{flex:1;overflow-y:auto;padding:8px 10px;background:var(--msg-bg);display:flex;flex-direction:column;gap:5px}
-.msg{max-width:78%;padding:7px 9px 4px;border-radius:8px;font-size:12.5px;line-height:1.45}
-.msg.r{background:var(--recv);border-radius:0 8px 8px 8px;align-self:flex-start;color:#111}
-.msg.s{background:var(--sent);border-radius:8px 0 8px 8px;align-self:flex-end;color:#111}
-.msg-t{font-size:10px;color:#667781;text-align:right;margin-top:3px}
-.receipt-bubble{background:#fff;border-radius:12px;border:1px solid #e8e8e8;padding:10px;max-width:230px;cursor:pointer}
-.rb-head{background:var(--wad);border-radius:8px;padding:8px 10px;margin:-10px -10px 8px;display:flex;align-items:center;gap:6px}
-.rb-head .ti{color:#fff;font-size:14px}
-.rb-head span{color:#fff;font-size:11px;font-weight:700}
-.rb-row{display:flex;justify-content:space-between;font-size:10.5px;color:#444;padding:2px 0;border-bottom:.5px solid #f8f8f8}
-.rb-row:last-of-type{border:none}
-.rb-tot{display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:#111;padding-top:6px;border-top:1px solid #eee;margin-top:4px}
-.chat-bar{height:48px;background:#f0f0f0;display:flex;align-items:center;gap:8px;padding:0 10px;flex-shrink:0}
-.chat-inp{flex:1;background:#fff;border-radius:20px;padding:8px 12px;border:none;font-size:13px;color:#111;outline:none}
-.send-b{width:34px;height:34px;background:var(--wa);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.send-b .ti{color:#fff;font-size:16px}
+        .top-tab {
+            flex: 1;
+            padding: 11px 0;
+            border: none;
+            background: none;
+            color: rgba(255,255,255,0.6);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.25s;
+        }
 
-/* QR SCAN */
-.qr-bg{flex:1;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
-.qr-frame{width:200px;height:200px;position:relative;border-radius:14px;overflow:hidden;background:rgba(255,255,255,.05)}
-.qr-corner2{position:absolute;width:22px;height:22px;border-color:var(--wa);border-style:solid}
-.qr-corner2.tl{top:-1px;left:-1px;border-width:3px 0 0 3px;border-radius:4px 0 0 0}
-.qr-corner2.tr{top:-1px;right:-1px;border-width:3px 3px 0 0;border-radius:0 4px 0 0}
-.qr-corner2.bl{bottom:-1px;left:-1px;border-width:0 0 3px 3px;border-radius:0 0 0 4px}
-.qr-corner2.br{bottom:-1px;right:-1px;border-width:0 3px 3px 0;border-radius:0 0 4px 0}
-.scan-anim{position:absolute;top:0;left:0;right:0;height:2px;background:var(--wa);animation:sc 2s linear infinite}
-@keyframes sc{0%{top:0}50%{top:100%}100%{top:0}}
-.qr-hint{color:#ddd;font-size:12px;text-align:center;line-height:1.5;padding:0 20px}
-.qr-actions{display:flex;gap:10px;padding:0 16px 14px}
-.qr-act{flex:1;background:rgba(255,255,255,.1);border-radius:12px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
-.qr-act .ti{font-size:22px;color:var(--wa)}
-.qr-act span{font-size:10px;color:#aaa}
+        .top-tab.active { color: #fff; border-bottom-color: var(--wa-green); }
 
-/* PAY SUCCESS */
-.pay-win{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:12px;background:#fff;overflow-y:auto}
-.ok-circle{width:72px;height:72px;background:#e8f5e9;border-radius:50%;display:flex;align-items:center;justify-content:center}
-.ok-circle .ti{font-size:36px;color:#2e7d32}
-.eco-bar{background:#e8f5e9;border-radius:12px;padding:12px;width:100%;display:flex;gap:12px}
-.eco-box{flex:1;text-align:center}
-.eco-val{font-size:18px;font-weight:700;color:#2e7d32}
-.eco-lbl{font-size:10px;color:#555;margin-top:2px}
-.mini-receipt{background:#f0faf5;border:1px solid #a5d6a7;border-radius:12px;padding:12px;width:100%}
-.mr-head{display:flex;align-items:center;gap:6px;margin-bottom:8px}
-.mr-head .ti{color:#2e7d32;font-size:16px}
-.mr-head span{font-size:13px;font-weight:700;color:#111}
-.mr-rows{font-size:11px;color:#444;display:flex;flex-direction:column;gap:3px}
-.mr-row{display:flex;justify-content:space-between}
-.big-btn{background:var(--wa);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;width:100%}
-.sm-btns{display:flex;gap:8px;width:100%}
-.sm-btn{flex:1;padding:10px;background:#f5f5f5;border-radius:10px;border:none;font-size:12px;font-weight:600;color:#333;cursor:pointer}
+        /* ── CONTENT ── */
+        .content {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            background: var(--wa-bg);
+        }
 
-/* RECEIPT DETAIL */
-.rd-head{background:var(--wad);padding:16px;text-align:center}
-.rd-icon{font-size:26px;color:#fff}
-.rd-merchant{font-size:16px;font-weight:700;color:#fff;margin-top:4px}
-.rd-meta{font-size:11px;color:rgba(255,255,255,.8);margin-top:2px}
-.rd-body{flex:1;overflow-y:auto;padding:12px;background:#f5f5f5;display:flex;flex-direction:column;gap:10px}
-.rd-card{background:#fff;border-radius:12px;padding:12px}
-.rd-section{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px}
-.rd-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:.5px solid #f8f8f8;font-size:12.5px}
-.rd-row:last-child{border:none}
-.rd-name{color:#333;flex:1}
-.rd-qty{color:#888;font-size:11px;width:40px;text-align:center}
-.rd-price{font-weight:600;color:#111}
-.rd-total{display:flex;justify-content:space-between;font-size:14px;font-weight:700;color:#111;padding-top:8px;border-top:1.5px solid #eee;margin-top:4px}
-.gst-r{display:flex;justify-content:space-between;font-size:11px;color:#888;padding:2px 0}
-.warranty-box{background:#e8f5e9;border:1px solid #a5d6a7;border-radius:10px;padding:10px;display:flex;gap:8px;align-items:flex-start}
-.warranty-box .ti{color:#2e7d32;font-size:18px;margin-top:1px}
-.warranty-box h5{font-size:12px;font-weight:700;color:#1b5e20;margin-bottom:3px}
-.warranty-box p{font-size:11px;color:#2e7d32}
-.eco-card{background:#f1f8e9;border:1px solid #c5e1a5;border-radius:10px;padding:10px;display:flex;gap:8px;align-items:center}
-.eco-card .ti{color:#558b2f;font-size:20px}
-.eco-card div{font-size:11px;color:#33691e;line-height:1.5}
-.eco-card div strong{font-size:12px;font-weight:700}
-.act-row{display:flex;gap:8px}
-.act-btn{flex:1;padding:9px;background:#fff;border-radius:9px;border:1px solid #e0e0e0;font-size:11px;font-weight:600;color:var(--wad);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px}
+        /* ── SCREENS ── */
+        .screen {
+            position: absolute;
+            inset: 0;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            display: none;
+            background: var(--wa-bg);
+            transition: transform 0.25s ease;
+        }
 
-/* FINANCE HOME (currency tab) */
-.fin-header{background:var(--wad);padding:14px 14px 22px}
-.fin-greeting{color:rgba(255,255,255,.8);font-size:12px}
-.fin-name{color:#fff;font-size:18px;font-weight:700;margin-bottom:12px}
-.bal-row{display:flex;gap:8px}
-.bal-c{flex:1;background:rgba(255,255,255,.15);border-radius:10px;padding:9px}
-.bal-c .bl{color:rgba(255,255,255,.8);font-size:9px;margin-bottom:3px}
-.bal-c .ba{color:#fff;font-size:14px;font-weight:700}
-.bal-c .bb{color:rgba(255,255,255,.65);font-size:9px;margin-top:2px}
-.fin-body{flex:1;overflow-y:auto;padding:12px;background:#f0f4f7;display:flex;flex-direction:column;gap:12px;margin-top:-10px}
-.fin-card{background:#fff;border-radius:14px;overflow:hidden}
-.fin-card-pad{padding:12px}
-.sec-lbl{font-size:12px;font-weight:700;color:#333;margin-bottom:10px}
-.qa-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.qa{background:#fff;border-radius:10px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;border:.5px solid #e8e8e8}
-.qa-ic{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center}
-.qa .ti{font-size:17px}
-.qa span{font-size:9px;color:#444;text-align:center;font-weight:500;line-height:1.2}
-.scan-strip{background:#fff;border-radius:12px;border:1.5px dashed var(--wa);padding:12px;display:flex;align-items:center;gap:10px;cursor:pointer}
-.scan-ic{width:44px;height:44px;background:#e8f5e9;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.scan-ic .ti{font-size:24px;color:var(--wa)}
-.scan-txt h4{font-size:13px;font-weight:700;color:#111;margin-bottom:2px}
-.scan-txt p{font-size:10px;color:#888;line-height:1.4}
-.bill-it{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:.5px solid #f5f5f5;cursor:pointer}
-.bill-it:last-child{border:none}
-.bill-ic{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.bill-ic .ti{font-size:18px}
-.bill-inf{flex:1;min-width:0}
-.bill-m{font-size:13px;font-weight:600;color:#111}
-.bill-d{font-size:10px;color:#888}
-.bill-pr{text-align:right}
-.bill-am{font-size:13px;font-weight:700;color:#111}
-.bill-sv{font-size:9px;color:var(--wa);margin-top:1px}
-.eco-strip{background:#e8f5e9;border-radius:12px;padding:12px;display:flex;gap:0}
-.eco-st-box{flex:1;text-align:center;border-right:.5px solid #a5d6a7}
-.eco-st-box:last-child{border:none}
-.eco-st-val{font-size:16px;font-weight:700;color:#2e7d32}
-.eco-st-lbl{font-size:9px;color:#555;margin-top:2px;line-height:1.3}
+        .screen.active { display: block; }
+        .screen.currency-child { padding-bottom: 64px; }
 
-/* ANALYTICS */
-.an-header{background:var(--wad);padding:14px}
-.an-tot{color:rgba(255,255,255,.8);font-size:12px;margin-bottom:2px}
-.an-amt{color:#fff;font-size:22px;font-weight:700;margin-bottom:4px}
-.an-vs{color:#a5d6a7;font-size:12px}
-.an-body{flex:1;overflow-y:auto;padding:12px;background:#f0f4f7;display:flex;flex-direction:column;gap:10px}
-.an-card{background:#fff;border-radius:12px;padding:12px}
-.bar-r{display:flex;align-items:center;gap:6px;margin-bottom:7px}
-.bar-lbl{font-size:11px;color:#555;width:66px;flex-shrink:0}
-.bar-bg{flex:1;height:7px;background:#f0f0f0;border-radius:3px;overflow:hidden}
-.bar-fill{height:100%;border-radius:3px}
-.bar-val{font-size:10.5px;font-weight:600;color:#333;width:42px;text-align:right}
-.insight-it{display:flex;gap:8px;padding:8px 0;border-bottom:.5px solid #f5f5f5;align-items:flex-start}
-.insight-it:last-child{border:none}
-.ins-ic{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.ins-ic .ti{font-size:16px}
-.ins-txt h5{font-size:12px;font-weight:700;color:#111;margin-bottom:2px}
-.ins-txt p{font-size:11px;color:#667781;line-height:1.4}
+        /* ── SCREEN HEADER WITH BACK ── */
+        .screen-hdr {
+            background: var(--wa-dark);
+            color: #fff;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
 
-/* BUDGET */
-.bud-header{background:var(--wad);padding:14px}
-.bud-lbl{color:rgba(255,255,255,.8);font-size:12px;margin-bottom:2px}
-.bud-amt{color:#fff;font-size:22px;font-weight:700;margin-bottom:6px}
-.bud-prog-bg{background:rgba(255,255,255,.2);border-radius:4px;height:7px;overflow:hidden}
-.bud-prog-fill{background:#fff;height:100%;border-radius:4px}
-.bud-meta{color:rgba(255,255,255,.8);font-size:10px;margin-top:5px}
-.bud-body{flex:1;overflow-y:auto;padding:12px;background:#f0f4f7;display:flex;flex-direction:column;gap:10px}
-.bud-card{background:#fff;border-radius:12px;padding:12px}
-.bud-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
-.bud-cat{font-size:12px;color:#333}
-.bud-nums{font-size:11px;color:#888}
-.bud-nums strong{color:#111}
-.bud-bar-bg{height:5px;background:#f0f0f0;border-radius:3px;overflow:hidden;margin-bottom:10px}
-.bud-bar-fill{height:100%;border-radius:3px}
-.over-tag{color:#e74c3c;font-size:9px;font-weight:700;margin-left:4px}
+        .back-btn {
+            background: none; border: none; color: #fff;
+            font-size: 22px; cursor: pointer; padding: 4px 8px;
+            border-radius: 50%;
+        }
 
-/* CURRENCY SETTINGS */
-.cs-body{flex:1;overflow-y:auto;background:#f5f5f5}
-.cs-profile{background:#fff;padding:14px;display:flex;align-items:center;gap:12px;border-bottom:.5px solid #eee}
-.cs-av{width:52px;height:52px;border-radius:50%;background:var(--wa);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff}
-.cs-info .cs-name{font-size:15px;font-weight:700;color:#111}
-.cs-info .cs-upi{font-size:12px;color:#888}
-.cs-sec-title{font-size:11px;font-weight:700;color:var(--wa);padding:10px 14px 4px;background:#f5f5f5}
-.cs-item{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#fff;border-bottom:.5px solid #f8f8f8;cursor:pointer}
-.cs-item .ti{font-size:19px;color:#555}
-.cs-item-text{flex:1}
-.cs-item-title{font-size:13px;color:#111}
-.cs-item-sub{font-size:10px;color:#aaa;margin-top:1px}
-.cs-item-right{font-size:11px;color:#aaa}
-.cs-toggle{width:38px;height:20px;background:var(--wa);border-radius:10px;position:relative;flex-shrink:0}
-.cs-toggle::after{content:'';position:absolute;right:2px;top:2px;width:16px;height:16px;background:#fff;border-radius:50%}
-.cs-toggle.off{background:#ccc}
-.cs-toggle.off::after{right:auto;left:2px}
-.linked-bank{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;border-bottom:.5px solid #f8f8f8}
-.bank-ic{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff}
-.bank-info{flex:1}
-.bank-name{font-size:13px;font-weight:600;color:#111}
-.bank-acc{font-size:10px;color:#888}
-.bank-bal{font-size:12px;font-weight:700;color:var(--wad)}
-</style>
+        .back-btn:active { background: rgba(255,255,255,0.2); }
+        .screen-hdr h2 { font-size: 17px; font-weight: 600; flex: 1; }
 
-<h2 class="sr-only">WhatsApp + PAYCEIPT full concept prototype with chat, calls, status, settings and currency tab</h2>
+        /* ── FILTER BAR ── */
+        .filters {
+            display: flex;
+            gap: 6px;
+            padding: 10px 16px;
+            background: var(--wa-gray);
+            border-bottom: 1px solid var(--wa-border);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
 
-<div class="phone">
-<div class="screen">
-<div class="status">
-  <span>9:41</span>
-  <span style="display:flex;gap:4px;align-items:center"><i class="ti ti-wifi" style="font-size:12px"></i><i class="ti ti-battery-3" style="font-size:12px"></i></span>
-</div>
+        .filters::-webkit-scrollbar { display: none; }
 
-<!-- ══ SPLASH ══ -->
-<div class="view on" id="v-splash">
-  <div class="home-splash">
-    <div class="splash-logo"><i class="ti ti-message-circle-2"></i></div>
-    <div class="splash-title">WhatsApp + PAYCEIPT</div>
-    <div class="splash-sub">One app. Chat with friends AND manage all your finances, bills, receipts and budget in one place.</div>
-    <div class="widget-row">
-      <div class="w-box" onclick="go('v-main')"><i class="ti ti-message-circle-2"></i><span class="wt">Chat</span><span class="ws">Messages · Calls · Status</span></div>
-      <div class="w-box" onclick="go('v-main');switchCurrency()"><i class="ti ti-currency-rupee"></i><span class="wt">Currency</span><span class="ws">Pay · Bills · Budget · Insights</span></div>
-    </div>
-    <button class="go-btn" onclick="go('v-main')">Explore the concept →</button>
-  </div>
-</div>
+        .chip {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 16px;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--wa-sub);
+            white-space: nowrap;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
 
-<!-- ══ MAIN WITH 4 TABS ══ -->
-<div class="view" id="v-main" style="flex-direction:column">
-  <div class="topbar">
-    <span class="topbar-title" id="main-title">WhatsApp</span>
-    <div class="ti-btn"><i class="ti ti-camera"></i></div>
-    <div class="ti-btn"><i class="ti ti-search"></i></div>
-    <div class="ti-btn"><i class="ti ti-dots-vertical"></i></div>
-  </div>
-  <div class="main-tabs" id="main-tabs">
-    <div class="mtab on" id="mt-chat" onclick="switchTab('chat')"><i class="ti ti-message-circle-2"></i><span>Chat</span></div>
-    <div class="mtab" id="mt-calls" onclick="switchTab('calls')"><i class="ti ti-phone"></i><span>Calls</span></div>
-    <div class="mtab" id="mt-status" onclick="switchTab('status')"><i class="ti ti-circle-filled"></i><span>Status</span></div>
-    <div class="mtab" id="mt-currency" onclick="switchTab('currency')"><i class="ti ti-currency-rupee"></i><span>Currency</span></div>
-    <div class="mtab" id="mt-settings" onclick="switchTab('settings')"><i class="ti ti-settings"></i><span>Settings</span></div>
-  </div>
-  <div class="tab-content">
+        .chip.active { background: var(--wa-dark); color: #fff; border-color: var(--wa-dark); }
 
-    <!-- CHAT -->
-    <div class="tc on" id="tc-chat" style="flex-direction:column">
-      <div class="chat-list-scroll">
-        <div class="ci" onclick="go('v-chat-apollo')">
-          <div class="av" style="background:#e74c3c">A</div>
-          <div class="ci-info"><div class="ci-name">Apollo Pharmacy</div><div class="ci-prev">🧾 Digital receipt saved — ₹540</div></div>
-          <div class="ci-meta"><div class="ci-time">12:15</div><div class="bdg">1</div></div>
-        </div>
-        <div class="ci" onclick="go('v-chat-praveen')">
-          <div class="av" style="background:#8e44ad">P</div>
-          <div class="ci-info"><div class="ci-name">Praveen (You)</div><div class="ci-prev">📄 PAYCEIPT receipt saved</div></div>
-          <div class="ci-meta"><div class="ci-time">12:01</div><div class="bdg">2</div></div>
-        </div>
-        <div class="ci">
-          <div class="av" style="background:#2980b9">R</div>
-          <div class="ci-info"><div class="ci-name">Ravi Kumar</div><div class="ci-prev">Did you check the bill?</div></div>
-          <div class="ci-meta"><div class="ci-time">11:30</div></div>
-        </div>
-        <div class="ci">
-          <div class="av" style="background:#27ae60">F</div>
-          <div class="ci-info"><div class="ci-name">Family Group</div><div class="ci-prev">Meena: dinner tonight?</div></div>
-          <div class="ci-meta"><div class="ci-time">10:45</div><div class="bdg">5</div></div>
-        </div>
-        <div class="ci">
-          <div class="av" style="background:#e67e22">D</div>
-          <div class="ci-info"><div class="ci-name">DMart Rewards</div><div class="ci-prev">🛒 Digital receipt — ₹2,340 saved</div></div>
-          <div class="ci-meta"><div class="ci-time">Yesterday</div><div class="bdg">1</div></div>
-        </div>
-        <div class="ci">
-          <div class="av" style="background:#16a085">I</div>
-          <div class="ci-info"><div class="ci-name">Indian Oil</div><div class="ci-prev">⛽ Fuel receipt — ₹450 saved</div></div>
-          <div class="ci-meta"><div class="ci-time">Mon</div></div>
-        </div>
-        <div class="ci">
-          <div class="av" style="background:#2c3e50">C</div>
-          <div class="ci-info"><div class="ci-name">Croma Electronics</div><div class="ci-prev">🎧 Receipt + warranty saved</div></div>
-          <div class="ci-meta"><div class="ci-time">Sun</div></div>
-        </div>
-      </div>
-    </div>
+        /* ── BOTTOM NAV ── */
+        .bottom-nav {
+            display: none;
+            background: #fff;
+            border-top: 1px solid var(--wa-border);
+            flex-shrink: 0;
+            padding-bottom: var(--safe-bottom);
+        }
 
-    <!-- CALLS -->
-    <div class="tc" id="tc-calls" style="flex-direction:column">
-      <div class="scroll">
-        <div style="font-size:11px;font-weight:700;color:#888;padding:10px 14px 4px;background:#f9f9f9">RECENT</div>
-        <div class="call-item">
-          <div class="av" style="background:#2980b9;width:42px;height:42px;font-size:14px">R</div>
-          <div class="call-info">
-            <div class="call-name">Ravi Kumar</div>
-            <div class="call-detail"><i class="ti ti-arrow-down-left" style="color:#e74c3c;font-size:11px"></i> Incoming · Today, 10:22 AM · 4m 15s</div>
-          </div>
-          <div class="call-icon-btn"><i class="ti ti-phone"></i></div>
-        </div>
-        <div class="call-item">
-          <div class="av" style="background:#27ae60;width:42px;height:42px;font-size:14px">F</div>
-          <div class="call-info">
-            <div class="call-name">Family Group</div>
-            <div class="call-detail"><i class="ti ti-arrow-up-right" style="color:var(--wa);font-size:11px"></i> Video call · Yesterday · 12m 30s</div>
-          </div>
-          <div class="call-icon-btn"><i class="ti ti-video"></i></div>
-        </div>
-        <div class="call-item">
-          <div class="av" style="background:#e74c3c;width:42px;height:42px;font-size:14px">A</div>
-          <div class="call-info">
-            <div class="call-name">Anitha</div>
-            <div class="call-detail"><i class="ti ti-arrow-down-left" style="color:#e74c3c;font-size:11px"></i> Missed · Monday</div>
-          </div>
-          <div class="call-icon-btn"><i class="ti ti-phone"></i></div>
-        </div>
-        <div class="call-item">
-          <div class="av" style="background:#8e44ad;width:42px;height:42px;font-size:14px">S</div>
-          <div class="call-info">
-            <div class="call-name">Suresh Office</div>
-            <div class="call-detail"><i class="ti ti-arrow-up-right" style="color:var(--wa);font-size:11px"></i> Outgoing · Sunday · 2m 10s</div>
-          </div>
-          <div class="call-icon-btn"><i class="ti ti-phone"></i></div>
-        </div>
-      </div>
+        .bottom-nav.visible { display: flex; }
+
+        .bnav-btn {
+            flex: 1;
+            padding: 6px 0 4px;
+            border: none;
+            background: none;
+            font-size: 10px;
+            cursor: pointer;
+            color: #999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            transition: color 0.2s;
+        }
+
+        .bnav-btn.active { color: var(--wa-dark); }
+        .bnav-btn .bi { font-size: 22px; }
+
+        /* ── CHAT LIST ── */
+        .chat-row {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+
+        .chat-row:active { background: #f5f5f5; }
+
+        .avatar {
+            width: 52px; height: 52px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; font-weight: 700; color: #fff; flex-shrink: 0;
+        }
+
+        .chat-body { flex: 1; min-width: 0; }
+        .chat-top { display: flex; justify-content: space-between; margin-bottom: 3px; }
+        .chat-top .name { font-weight: 600; font-size: 15px; }
+        .chat-top .time { font-size: 12px; color: var(--wa-sub); }
+        .chat-msg { font-size: 13px; color: var(--wa-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .badge {
+            background: var(--wa-green); color: #fff; border-radius: 50%;
+            min-width: 20px; height: 20px; display: flex; align-items: center;
+            justify-content: center; font-size: 11px; font-weight: 700; padding: 0 5px;
+        }
+
+        /* ── STATUS ── */
+        .st-header { padding: 10px 16px; background: var(--wa-gray); font-size: 12px; font-weight: 600; color: var(--wa-sub); text-transform: uppercase; letter-spacing: 0.5px; }
+        .st-row { padding: 10px 16px; border-bottom: 1px solid #f0f0f0; display: flex; gap: 14px; align-items: center; }
+        .st-ring { position: relative; }
+        .st-ring::after { content: ''; position: absolute; inset: -3px; border-radius: 50%; border: 3px solid var(--wa-green); }
+        .st-ring.viewed::after { border-color: #ccc; }
+
+        /* ── CALLS ── */
+        .call-row { padding: 10px 16px; border-bottom: 1px solid #f0f0f0; display: flex; gap: 14px; align-items: center; }
+        .call-body { flex: 1; }
+        .call-name { font-weight: 600; font-size: 14px; }
+        .call-meta { font-size: 12px; color: var(--wa-sub); margin-top: 2px; }
+        .call-action { font-size: 20px; color: var(--wa-dark); }
+
+        /* ── CURRENCY HOME ── */
+        .greeting { padding: 16px 16px 2px; font-size: 13px; color: var(--wa-sub); }
+        .username { padding: 0 16px 14px; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+
+        .bal-card {
+            background: linear-gradient(135deg, #075e54, #128c7e, #25d366);
+            color: #fff; border-radius: 16px; padding: 16px;
+            margin: 0 16px 12px;
+            box-shadow: 0 4px 20px rgba(7,94,84,0.3);
+        }
+
+        .bal-label { font-size: 12px; opacity: 0.85; margin-bottom: 4px; }
+        .bal-amount { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 2px; }
+        .bal-sub { font-size: 12px; opacity: 0.85; margin-bottom: 12px; }
+
+        .bal-metrics {
+            display: grid; grid-template-columns: repeat(3,1fr);
+            border-top: 1px solid rgba(255,255,255,0.25);
+            padding-top: 10px;
+        }
+
+        .bm { text-align: center; border-right: 1px solid rgba(255,255,255,0.2); padding: 4px 0; }
+        .bm:last-child { border-right: none; }
+        .bm-val { font-size: 14px; font-weight: 700; }
+        .bm-lbl { font-size: 10px; opacity: 0.85; }
+
+        .qr-bar {
+            background: linear-gradient(135deg, #1a3a34, #075e54);
+            color: #fff; border-radius: 12px; padding: 14px 16px;
+            margin: 0 16px 12px; display: flex; align-items: center; gap: 12px;
+            cursor: pointer; transition: opacity 0.2s;
+        }
+
+        .qr-bar:active { opacity: 0.85; }
+        .qr-bar-icon { font-size: 32px; }
+        .qr-bar h3 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+        .qr-bar p { font-size: 12px; opacity: 0.85; }
+
+        .sec-label { font-size: 12px; font-weight: 700; color: var(--wa-sub); text-transform: uppercase; letter-spacing: 0.6px; padding: 12px 16px 8px; }
+
+        .qa-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; padding: 0 16px 12px; }
+        .qa-item { background: var(--wa-gray); border: 1px solid var(--wa-border); border-radius: 12px; padding: 14px 8px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .qa-item:active { background: #e8f5e9; border-color: var(--wa-green); }
+        .qa-ico { font-size: 28px; margin-bottom: 6px; }
+        .qa-txt { font-size: 11px; color: var(--wa-sub); font-weight: 500; }
+
+        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px 12px; }
+        .stat { background: linear-gradient(135deg, var(--wa-dark), var(--wa-green)); color: #fff; border-radius: 12px; padding: 14px; text-align: center; }
+        .stat-v { font-size: 20px; font-weight: 700; }
+        .stat-l { font-size: 11px; opacity: 0.9; margin-top: 2px; }
+
+        .ren-badge { background: #ffe0e0; color: #c0392b; padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 700; margin-left: 6px; }
+
+        /* ── LIST ROWS ── */
+        .lrow { padding: 14px 16px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+        .lrow:active { background: #f9f9f9; }
+        .lr-left { flex: 1; min-width: 0; }
+        .lr-name { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+        .lr-sub { font-size: 12px; color: var(--wa-sub); }
+        .lr-amt { font-weight: 700; font-size: 15px; color: var(--wa-dark); }
+
+        /* ── SUB-TABS ── */
+        .sub-tabs { display: flex; border-bottom: 1px solid var(--wa-border); overflow-x: auto; padding: 0 12px; scrollbar-width: none; }
+        .sub-tabs::-webkit-scrollbar { display: none; }
+        .stab { padding: 10px 12px; border: none; background: none; font-size: 13px; font-weight: 500; cursor: pointer; color: #999; border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.2s; }
+        .stab.active { color: var(--wa-dark); border-bottom-color: var(--wa-green); }
+
+        /* ── CHART ── */
+        .chart-box { position: relative; height: 210px; margin: 12px 16px; background: var(--wa-gray); border-radius: 12px; padding: 12px; }
+        .cbtn-row { display: flex; gap: 6px; padding: 10px 16px 4px; }
+        .cbtn { background: #f0f0f0; border: 1px solid #e0e0e0; border-radius: 16px; padding: 6px 14px; font-size: 12px; cursor: pointer; color: #555; transition: all 0.2s; }
+        .cbtn.active { background: var(--wa-green); color: #000; border-color: var(--wa-green); }
+
+        /* ── SPEND SUMMARY ── */
+        .sp-sum { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; padding: 10px 16px; }
+        .ss { background: var(--wa-gray); border-radius: 10px; padding: 10px; text-align: center; }
+        .ss-v { font-size: 16px; font-weight: 700; color: var(--wa-dark); }
+        .ss-l { font-size: 10px; color: var(--wa-sub); margin-top: 2px; }
+
+        /* ── EXPORT ── */
+        .exp-btn { background: var(--wa-green); color: #000; border: none; border-radius: 10px; padding: 13px; font-weight: 700; font-size: 14px; cursor: pointer; margin: 6px 16px 10px; width: calc(100% - 32px); transition: background 0.2s; }
+        .exp-btn:active { background: #20b858; }
+
+        /* ── SUBSCRIPTION ── */
+        .sub-row { padding: 14px 16px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+        .sr-name { font-weight: 600; font-size: 14px; }
+        .sr-date { font-size: 12px; color: var(--wa-sub); margin-top: 2px; }
+        .sr-amt { font-weight: 700; font-size: 14px; color: var(--wa-dark); text-align: right; }
+        .sr-freq { font-size: 11px; color: var(--wa-sub); }
+
+        /* ── TIMELINE ── */
+        .tl { display: flex; gap: 14px; padding: 14px 16px; border-bottom: 1px solid #f0f0f0; }
+        .tl:active { background: #f9f9f9; }
+        .tl-ico { font-size: 28px; }
+        .tl-body { flex: 1; }
+        .tl-name { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+        .tl-sub { font-size: 12px; color: var(--wa-sub); }
+        .tl-amt { font-weight: 700; font-size: 14px; color: var(--wa-green); margin-top: 3px; }
+
+        /* ── WALLET GRID ── */
+        .wgrid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; padding: 16px; }
+        .wcard { background: var(--wa-gray); border-radius: 12px; padding: 18px 8px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .wcard:active { background: #e8f5e9; }
+        .wcard-ico { font-size: 34px; margin-bottom: 6px; }
+        .wcard-lbl { font-size: 11px; font-weight: 600; color: #333; }
+
+        /* ── ACCOUNTS ── */
+        .acc-add { border: 2px dashed var(--wa-green); border-radius: 12px; padding: 16px; margin: 14px 16px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .acc-add:active { background: #e8f5e9; }
+
+        /* ── QR SCANNER ── */
+        .qr-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.94);
+            z-index: 999; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+        }
+        .qr-overlay.open { display: flex; }
+        .qr-frame {
+            width: 260px; height: 260px; border-radius: 16px; position: relative;
+            overflow: hidden; background: #111; border: 3px solid var(--wa-green);
+        }
+        .qr-corner { position: absolute; width: 24px; height: 24px; border-color: var(--wa-green); border-style: solid; }
+        .qr-corner.tl { top:0;left:0;border-width:3px 0 0 3px; }
+        .qr-corner.tr { top:0;right:0;border-width:3px 3px 0 0; }
+        .qr-corner.bl { bottom:0;left:0;border-width:0 0 3px 3px; }
+        .qr-corner.br { bottom:0;right:0;border-width:0 3px 3px 0; }
+        .qr-line { position: absolute; width: 100%; height: 2px; background: linear-gradient(90deg,transparent,var(--wa-green),transparent); animation: scan 2s ease-in-out infinite; }
+        @keyframes scan { 0%{top:10%} 50%{top:85%} 100%{top:10%} }
+        .qr-text { color: #fff; font-size: 14px; font-weight: 500; }
+        .qr-note { color: rgba(255,255,255,0.5); font-size: 12px; text-align: center; max-width: 260px; }
+        .qr-close-btn { background: var(--wa-green); color: #000; border: none; border-radius: 24px; padding: 12px 32px; font-size: 14px; font-weight: 700; cursor: pointer; }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="status-bar"></div>
+
+    <div class="header">
+        <h1>WhatsApp</h1>
+        <div class="header-icons"><span>🔍</span> <span>⋮</span></div>
     </div>
 
-    <!-- STATUS -->
-    <div class="tc" id="tc-status" style="flex-direction:column">
-      <div class="scroll">
-        <div class="status-my">
-          <div style="position:relative">
-            <div class="av" style="background:var(--wa);width:46px;height:46px;font-size:16px">P</div>
-            <div style="position:absolute;bottom:-2px;right:-2px;width:18px;height:18px;background:var(--wa);border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center"><i class="ti ti-plus" style="font-size:10px;color:#fff"></i></div>
-          </div>
-          <div style="flex:1"><div style="font-size:14px;font-weight:600;color:#111">My status</div><div style="font-size:11px;color:#888">Tap to add status update</div></div>
-          <div class="ti-btn" style="color:#667781"><i class="ti ti-edit" style="color:#667781;font-size:18px"></i></div>
-        </div>
-        <div class="status-section-label">RECENT UPDATES</div>
-        <div class="status-item">
-          <div class="status-ring"><div class="status-inner"><div class="av" style="background:#2980b9;width:40px;height:40px;font-size:14px">R</div></div></div>
-          <div class="status-info"><div class="status-name">Ravi Kumar</div><div class="status-time">15 minutes ago</div></div>
-        </div>
-        <div class="status-item">
-          <div class="status-ring"><div class="status-inner"><div class="av" style="background:#27ae60;width:40px;height:40px;font-size:14px">M</div></div></div>
-          <div class="status-info"><div class="status-name">Meena</div><div class="status-time">1 hour ago</div></div>
-        </div>
-        <div class="status-item">
-          <div class="status-ring"><div class="status-inner"><div class="av" style="background:#e74c3c;width:40px;height:40px;font-size:14px">A</div></div></div>
-          <div class="status-info"><div class="status-name">Anitha</div><div class="status-time">3 hours ago</div></div>
-        </div>
-        <div class="status-section-label">VIEWED UPDATES</div>
-        <div class="status-item">
-          <div class="status-ring-seen" style="border-radius:50%;padding:2.5px"><div class="status-inner"><div class="av" style="background:#8e44ad;width:40px;height:40px;font-size:14px">S</div></div></div>
-          <div class="status-info"><div class="status-name">Suresh</div><div class="status-time">Yesterday</div></div>
-        </div>
-      </div>
+    <div class="top-tabs">
+        <button class="top-tab active" onclick="topTab(this,'s-chats')">Chats</button>
+        <button class="top-tab" onclick="topTab(this,'s-status')">Status</button>
+        <button class="top-tab" onclick="topTab(this,'s-calls')">Calls</button>
+        <button class="top-tab" onclick="topTab(this,'s-currency')">💵 Currency</button>
     </div>
 
-    <!-- CURRENCY -->
-    <div class="tc" id="tc-currency" style="flex-direction:column">
-      <div class="fin-header">
-        <div class="fin-greeting">Good morning,</div>
-        <div class="fin-name">T.B. Praveen</div>
-        <div class="bal-row">
-          <div class="bal-c"><div class="bl">SBI Savings</div><div class="ba">₹48,230</div><div class="bb">●●●● 4521</div></div>
-          <div class="bal-c"><div class="bl">HDFC Account</div><div class="ba">₹1,12,800</div><div class="bb">●●●● 7834</div></div>
-          <div class="bal-c"><div class="bl">ICICI Account</div><div class="ba">₹22,500</div><div class="bb">●●●● 9021</div></div>
+    <div class="content">
+
+        <!-- ═══ CHATS ═══ -->
+        <div class="screen active" id="s-chats">
+            <div class="chat-row"><div class="avatar" style="background:#0077b6">B</div><div class="chat-body"><div class="chat-top"><span class="name">Ben</span><span class="time">6:13 PM</span></div><div class="chat-msg">On my way, be there in 10!</div></div><div class="badge">2</div></div>
+            <div class="chat-row"><div class="avatar" style="background:#e74c3c">B</div><div class="chat-body"><div class="chat-top"><span class="name">Betty Manager</span><span class="time">5:56 PM</span></div><div class="chat-msg">Please mail it when its done</div></div></div>
+            <div class="chat-row"><div class="avatar" style="background:#7f8c8d">M</div><div class="chat-body"><div class="chat-top"><span class="name">Mom</span><span class="time">5:35 PM</span></div><div class="chat-msg">Had coffee??? 😄</div></div><div class="badge">1</div></div>
+            <div class="chat-row"><div class="avatar" style="background:#f39c12">J</div><div class="chat-body"><div class="chat-top"><span class="name">Johnny Bro</span><span class="time">10:07 AM</span></div><div class="chat-msg">Wb the meeting? 🤔</div></div></div>
+            <div class="chat-row"><div class="avatar" style="background:#00bcd4">F</div><div class="chat-body"><div class="chat-top"><span class="name">Flutter Devs</span><span class="time">9:11 AM</span></div><div class="chat-msg">Johny: Good morning guys!</div></div><div class="badge">5</div></div>
+            <div class="chat-row"><div class="avatar" style="background:#ff6b9d">S</div><div class="chat-body"><div class="chat-top"><span class="name">Sam Bombay</span><span class="time">Yesterday</span></div><div class="chat-msg">Meeting with BOSS tomorrow!</div></div></div>
+            <div class="chat-row"><div class="avatar" style="background:#673ab7">S</div><div class="chat-body"><div class="chat-top"><span class="name">Stacy</span><span class="time">Tuesday</span></div><div class="chat-msg">Call me asap 📞</div></div><div class="badge">3</div></div>
+            <div class="chat-row"><div class="avatar" style="background:#009688">A</div><div class="chat-body"><div class="chat-top"><span class="name">Andrew</span><span class="time">Monday</span></div><div class="chat-msg">Okay its fine 👍</div></div></div>
+            <div class="chat-row"><div class="avatar" style="background:#5c6bc0">S</div><div class="chat-body"><div class="chat-top"><span class="name">Sara</span><span class="time">Monday</span></div><div class="chat-msg">Hmmmm 🤨</div></div></div>
+            <div class="chat-row"><div class="avatar" style="background:#27ae60">F</div><div class="chat-body"><div class="chat-top"><span class="name">Family Group</span><span class="time">Sunday</span></div><div class="chat-msg">Meena: dinner tonight? 🍽️</div></div><div class="badge">8</div></div>
         </div>
-      </div>
-      <div class="fin-body">
-        <div class="eco-strip" style="margin-top:0">
-          <div class="eco-st-box"><div class="eco-st-val">47</div><div class="eco-st-lbl">Bills saved digitally</div></div>
-          <div class="eco-st-box"><div class="eco-st-val">2.3kg</div><div class="eco-st-lbl">Paper saved</div></div>
-          <div class="eco-st-box"><div class="eco-st-val">0.8kg</div><div class="eco-st-lbl">CO₂ avoided</div></div>
-        </div>
-        <div class="fin-card">
-          <div class="fin-card-pad">
-            <div class="sec-lbl">Quick actions</div>
-            <div class="qa-grid">
-              <div class="qa" onclick="go('v-qr-scan')"><div class="qa-ic" style="background:#e8f5e9"><i class="ti ti-qrcode" style="color:#2e7d32"></i></div><span>Scan & Pay</span></div>
-              <div class="qa" onclick="go('v-all-bills')"><div class="qa-ic" style="background:#e3f2fd"><i class="ti ti-file-invoice" style="color:#1565c0"></i></div><span>My Bills</span></div>
-              <div class="qa" onclick="go('v-analytics')"><div class="qa-ic" style="background:#fff3e0"><i class="ti ti-chart-pie" style="color:#e65100"></i></div><span>Spending</span></div>
-              <div class="qa" onclick="go('v-budget')"><div class="qa-ic" style="background:#fce4ec"><i class="ti ti-wallet" style="color:#880e4f"></i></div><span>Budget</span></div>
-              <div class="qa"><div class="qa-ic" style="background:#f3e5f5"><i class="ti ti-bank" style="color:#6a1b9a"></i></div><span>Transfer</span></div>
-              <div class="qa"><div class="qa-ic" style="background:#e1f5fe"><i class="ti ti-receipt" style="color:#01579b"></i></div><span>Pay Bills</span></div>
-              <div class="qa"><div class="qa-ic" style="background:#e8f5e9"><i class="ti ti-shield-check" style="color:#1b5e20"></i></div><span>Warranty</span></div>
-              <div class="qa" onclick="go('v-curr-settings')"><div class="qa-ic" style="background:#fafafa"><i class="ti ti-settings" style="color:#555"></i></div><span>Settings</span></div>
+
+        <!-- ═══ STATUS ═══ -->
+        <div class="screen" id="s-status">
+            <div style="padding:14px 16px; display:flex; gap:14px; align-items:center; border-bottom:1px solid #f0f0f0;">
+                <div style="position:relative;"><div class="avatar" style="background:var(--wa-dark);">P</div><div style="position:absolute;bottom:-2px;right:-2px;background:var(--wa-green);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;border:2px solid #fff;">+</div></div>
+                <div><div style="font-weight:700;font-size:14px;">My Status</div><div style="font-size:12px;color:var(--wa-sub);">Tap to add status update</div></div>
             </div>
-          </div>
+            <div class="st-header">Recent Updates</div>
+            <div class="st-row"><div class="st-ring"><div class="avatar" style="background:#e74c3c">A</div></div><div><div class="status-name" style="font-weight:600;font-size:14px;">Anjali Sharma</div><div style="font-size:12px;color:var(--wa-sub);">Today, 11:45 AM · 3 updates</div></div></div>
+            <div class="st-row"><div class="st-ring"><div class="avatar" style="background:#3498db">R</div></div><div><div style="font-weight:600;font-size:14px;">Ravi Kumar</div><div style="font-size:12px;color:var(--wa-sub);">Today, 10:22 AM · 1 update</div></div></div>
+            <div class="st-row"><div class="st-ring"><div class="avatar" style="background:#27ae60">M</div></div><div><div style="font-weight:600;font-size:14px;">Meena (Family)</div><div style="font-size:12px;color:var(--wa-sub);">Today, 9:10 AM · 2 updates</div></div></div>
+            <div class="st-header">Viewed Updates</div>
+            <div class="st-row"><div class="st-ring viewed"><div class="avatar" style="background:#7f8c8d">K</div></div><div><div style="font-weight:600;font-size:14px;">Kiran Bose</div><div style="font-size:12px;color:var(--wa-sub);">Yesterday, 8:45 PM</div></div></div>
+            <div class="st-row"><div class="st-ring viewed"><div class="avatar" style="background:#e67e22">S</div></div><div><div style="font-weight:600;font-size:14px;">Suresh Nair</div><div style="font-size:12px;color:var(--wa-sub);">Yesterday, 6:30 PM</div></div></div>
         </div>
-        <div class="scan-strip" onclick="go('v-qr-scan')">
-          <div class="scan-ic"><i class="ti ti-qrcode"></i></div>
-          <div class="scan-txt"><h4>Scan QR — pay and get receipt</h4><p>Pay via UPI or scan cash receipt QR. Digital bill saved automatically. No paper printed.</p></div>
-          <i class="ti ti-chevron-right" style="font-size:16px;color:var(--wa)"></i>
+
+        <!-- ═══ CALLS ═══ -->
+        <div class="screen" id="s-calls">
+            <div class="call-row"><div class="avatar" style="background:#e74c3c;width:46px;height:46px;font-size:18px;">A</div><div class="call-body"><div class="call-name">Anjali Sharma</div><div class="call-meta"><span style="color:#27ae60">↙</span> Incoming · Today, 10:15 AM</div></div><span class="call-action">📞</span></div>
+            <div class="call-row"><div class="avatar" style="background:#27ae60;width:46px;height:46px;font-size:18px;">F</div><div class="call-body"><div class="call-name" style="color:#c0392b">Family Group</div><div class="call-meta"><span style="color:#c0392b">↙</span> Missed · Today, 9:02 AM</div></div><span class="call-action">📞</span></div>
+            <div class="call-row"><div class="avatar" style="background:#3498db;width:46px;height:46px;font-size:18px;">R</div><div class="call-body"><div class="call-name">Ravi Kumar</div><div class="call-meta"><span style="color:var(--wa-sub)">↗</span> Outgoing · Yesterday, 6:45 PM</div></div><span class="call-action">📞</span></div>
+            <div class="call-row"><div class="avatar" style="background:#8e44ad;width:46px;height:46px;font-size:18px;">S</div><div class="call-body"><div class="call-name">Suresh Nair</div><div class="call-meta"><span style="color:#27ae60">↙</span> Video · Yesterday, 4:20 PM</div></div><span class="call-action">📹</span></div>
+            <div class="call-row"><div class="avatar" style="background:#e67e22;width:46px;height:46px;font-size:18px;">K</div><div class="call-body"><div class="call-name" style="color:#c0392b">Kiran Bose</div><div class="call-meta"><span style="color:#c0392b">↙</span> Missed · Mon, 2:10 PM</div></div><span class="call-action">📞</span></div>
+            <div class="call-row"><div class="avatar" style="background:#16a085;width:46px;height:46px;font-size:18px;">M</div><div class="call-body"><div class="call-name">Meena</div><div class="call-meta"><span style="color:var(--wa-sub)">↗</span> Outgoing · Mon, 11:30 AM</div></div><span class="call-action">📞</span></div>
         </div>
-        <div class="fin-card">
-          <div class="sec-lbl" style="padding:12px 12px 8px">Recent bills</div>
-          <div class="bill-it" onclick="go('v-receipt-apollo')">
-            <div class="bill-ic" style="background:#e3f2fd"><i class="ti ti-building-store" style="color:#1565c0"></i></div>
-            <div class="bill-inf"><div class="bill-m">Apollo Pharmacy</div><div class="bill-d">Today · 3 items</div></div>
-            <div class="bill-pr"><div class="bill-am">₹540</div><div class="bill-sv">Warranty ✓</div></div>
-          </div>
-          <div class="bill-it" onclick="go('v-receipt-dmart')">
-            <div class="bill-ic" style="background:#f3e5f5"><i class="ti ti-shopping-cart" style="color:#6a1b9a"></i></div>
-            <div class="bill-inf"><div class="bill-m">DMart</div><div class="bill-d">Yesterday · 12 items</div></div>
-            <div class="bill-pr"><div class="bill-am">₹2,340</div><div class="bill-sv">Saved ✓</div></div>
-          </div>
-          <div class="bill-it" onclick="go('v-receipt-iocl')">
-            <div class="bill-ic" style="background:#fff8e1"><i class="ti ti-gas-station" style="color:#f57f17"></i></div>
-            <div class="bill-inf"><div class="bill-m">Indian Oil</div><div class="bill-d">14 Jul · Petrol 4.5L</div></div>
-            <div class="bill-pr"><div class="bill-am">₹450</div><div class="bill-sv">Saved ✓</div></div>
-          </div>
-          <div class="bill-it" onclick="go('v-receipt-croma')">
-            <div class="bill-ic" style="background:#e8f5e9"><i class="ti ti-device-laptop" style="color:#2e7d32"></i></div>
-            <div class="bill-inf"><div class="bill-m">Croma</div><div class="bill-d">10 Jul · Headphones</div></div>
-            <div class="bill-pr"><div class="bill-am">₹2,999</div><div class="bill-sv">1yr warranty</div></div>
-          </div>
+
+        <!-- ═══ CURRENCY HOME ═══ -->
+        <div class="screen currency-child" id="s-currency">
+            <div class="greeting">Good morning,</div>
+            <div class="username">T.B. Praveen</div>
+
+            <div class="bal-card">
+                <div class="bal-label">Total Balance</div>
+                <div class="bal-amount">₹1,83,530</div>
+                <div class="bal-sub">Across all accounts</div>
+                <div class="bal-metrics">
+                    <div class="bm"><div class="bm-val">2.3kg</div><div class="bm-lbl">📄 Paper Saved</div></div>
+                    <div class="bm"><div class="bm-val">0.8kg</div><div class="bm-lbl">🌫️ CO₂ Avoided</div></div>
+                    <div class="bm"><div class="bm-val">0.004</div><div class="bm-lbl">🌳 Trees Saved</div></div>
+                </div>
+            </div>
+
+            <div class="qr-bar" onclick="openQR()">
+                <div class="qr-bar-icon">🔗</div>
+                <div style="flex:1"><h3>Scan QR · Pay & Get Digital Bill</h3><p>No paper receipt · Instant · Eco-friendly</p></div>
+                <div style="font-size:18px;opacity:0.7">›</div>
+            </div>
+
+            <div class="sec-label">Quick Actions</div>
+            <div class="qa-grid">
+                <div class="qa-item" onclick="go('s-bills','b-bills')"><div class="qa-ico">📋</div><div class="qa-txt">Bills</div></div>
+                <div class="qa-item" onclick="go('s-spend','b-spend')"><div class="qa-ico">📊</div><div class="qa-txt">Spending</div></div>
+                <div class="qa-item" onclick="go('s-subs','b-subs')"><div class="qa-ico">🔄</div><div class="qa-txt">Subscriptions</div></div>
+                <div class="qa-item" onclick="go('s-inbox','b-home')"><div class="qa-ico">📬</div><div class="qa-txt">Universal Inbox</div></div>
+                <div class="qa-item" onclick="go('s-wallet','b-home')"><div class="qa-ico">🎫</div><div class="qa-txt">QR Wallet</div></div>
+                <div class="qa-item" onclick="go('s-accounts','b-set')"><div class="qa-ico">🏦</div><div class="qa-txt">Accounts</div></div>
+            </div>
+
+            <div class="stats">
+                <div class="stat"><div class="stat-v">₹13,150</div><div class="stat-l">Spent This Month</div></div>
+                <div class="stat"><div class="stat-v">₹3,200</div><div class="stat-l">Saved So Far</div></div>
+            </div>
+
+            <div class="sec-label">🚨 Renewal Alerts</div>
+            <div class="tl"><div class="tl-ico">📺</div><div class="tl-body"><div class="tl-name">Netflix <span class="ren-badge">3 days</span></div><div class="tl-sub">₹649/month</div></div></div>
+            <div class="tl"><div class="tl-ico">🎵</div><div class="tl-body"><div class="tl-name">Spotify <span class="ren-badge">5 days</span></div><div class="tl-sub">₹119/month</div></div></div>
+            <div class="tl"><div class="tl-ico">💡</div><div class="tl-body"><div class="tl-name">Electricity <span class="ren-badge">Due 5d</span></div><div class="tl-sub">₹3,200 — TNEB</div></div></div>
         </div>
-      </div>
-    </div>
 
-    <!-- SETTINGS (WhatsApp) -->
-    <div class="tc" id="tc-settings" style="flex-direction:column">
-      <div class="scroll">
-        <div class="settings-profile">
-          <div class="av" style="background:var(--wa);width:52px;height:52px;font-size:18px;flex-shrink:0">P</div>
-          <div class="settings-profile-info"><div class="sn">T.B. Praveen</div><div class="ss">Hey there! I am using WhatsApp.</div></div>
-          <div class="ti-btn"><i class="ti ti-qrcode" style="color:#555;font-size:18px"></i></div>
+        <!-- ═══ BILLS ═══ -->
+        <div class="screen currency-child" id="s-bills">
+            <div class="screen-hdr"><button class="back-btn" onclick="go('s-currency','b-home')">←</button><h2>Bills & Receipts</h2></div>
+            <div class="filters"><button class="chip active" onclick="fc(this)">All</button><button class="chip" onclick="fc(this)">Today</button><button class="chip" onclick="fc(this)">This Week</button><button class="chip" onclick="fc(this)">This Month</button><button class="chip" onclick="fc(this)">3 Months</button></div>
+            <div class="sub-tabs">
+                <button class="stab active" onclick="stab(this,'bt-rec')">Receipts</button>
+                <button class="stab" onclick="stab(this,'bt-util')">Utilities</button>
+                <button class="stab" onclick="stab(this,'bt-food')">Food</button>
+                <button class="stab" onclick="stab(this,'bt-evt')">Events</button>
+                <button class="stab" onclick="stab(this,'bt-mov')">Movies</button>
+                <button class="stab" onclick="stab(this,'bt-trv')">Travel</button>
+            </div>
+            <div id="bt-rec">
+                <div class="lrow"><div class="lr-left"><div class="lr-name">🏥 Apollo Pharmacy</div><div class="lr-sub">15 Jul · 2:45 PM · UPI</div></div><div class="lr-amt">₹450</div></div>
+                <div class="lrow"><div class="lr-left"><div class="lr-name">🛒 D-Mart Supermarket</div><div class="lr-sub">15 Jul · 1:12 PM · UPI</div></div><div class="lr-amt">₹2,100</div></div>
+                <div class="lrow"><div class="lr-left"><div class="lr-name">🎧 Croma Electronics</div><div class="lr-sub">12 Jul · Credit Card</div></div><div class="lr-amt">₹8,990</div></div>
+                <div class="lrow"><div class="lr-left"><div class="lr-name">💊 MedPlus Pharmacy</div><div class="lr-sub">10 Jul · UPI</div></div><div class="lr-amt">₹320</div></div>
+                <div class="lrow"><div class="lr-left"><div class="lr-name">👟 Nike Store</div><div class="lr-sub">08 Jul · Credit Card</div></div><div class="lr-amt">₹4,500</div></div>
+                <div class="lrow"><div class="lr-left"><div class="lr-name">📚 Higginbothams Books</div><div class="lr-sub">05 Jul · UPI</div></div><div class="lr-amt">₹680</div></div>
+                <div class="lrow"><div class="lr-left"><div class="lr-name">🛒 Big Bazaar</div><div class="lr-sub">02 Jul · Debit Card</div></div><div class="lr-amt">₹1,750</div></div>
+            </div>
+            <div id="bt-util" style="display:none">
+                <div class="lrow"><div class="lr-left"><div class="lr-name">⚡ Electricity (TNEB)</div><div class="lr-sub">Due: 20 Jul</div></div><div class="lr-amt" style="color:#c0392b">DUE</div></div>
+                <div class="lrow"><div class="lr-left"><div class="lr-name">💧 Water Bill</div><div class="lr-sub">Due: 25 Jul</div></div><div class="lr-amt">₹800</div></div>
+                <div class="lrow"><div class="lr-left"><div class="lr-name">📡 ACT Fibernet</div><div class="lr-sub">Due: 30 Jul</div></div><div class="lr-amt">₹999</div></div>
+                <div class="lrow"><div class="lr-left"><div class="lr-name">📱 Airtel Postpaid</div><div class="lr-sub">Due: 22 Jul</div></div><div class="lr-amt">₹699</div></div>
+                <div class="lrow"><div class="lr-left"><div class="lr-name">🏠 Rent Payment</div><div class="lr-sub">Due: 01 Aug</div></div><div class="lr-amt">₹22,000</div></div>
+                <div class="lrow"><div class="lr-left"><div class="lr-name">🔥 HP Gas Cylinder</div><div class="lr-sub">Paid: 10 Jul</div></div><div class="lr-amt">₹910</div></div>
+                <div class="lrow"><div class="lr-left"><div class="lr-name">🏢 Society Maintenance</div><div class="lr-sub">Due: 05 Aug</div></div><div class="lr-amt">₹3,500</div></div>
+            </div>
+            <div id="bt-food" style="display:none">
+                <div class="lrow"><div class="lr-left"><div class="lr-name">🍽️ Saravana Bhavan</div><div class="lr-sub">14 Jul · Dinner · UPI</div></div><div class="lr-amt">₹850</div></div>
+                <div class="lrow"><div class="lr-left"><div class="lr-name">🍕 Swiggy Delivery</div><div class="lr-sub">13 Jul · Biryani</div></div><div class="lr-amt">₹450</div></div>
+                <div class="lrow"><div class="lr-left"><div class="lr-name">🍽️ Zomato — Pizza Hut</div><div class="lr-sub">11 Jul · Online</div></div><div class="lr-amt">₹650</div></div>
+                <div class="lrow"><div class="lr-left"><div class="lr-name">☕ Starbucks</div><div class="lr-sub">09 Jul · UPI</div></div><div class="lr-amt">₹540</div></div>
+                <div class="lrow"><div class="lr-left"><div class="lr-name">🍔 McDonald's</div><div class="lr-sub">07 Jul · UPI</div></div><div class="lr-amt">₹380</div></div>
+            </div>
+            <div id="bt-evt" style="display:none">
+                <div class="lrow"><div class="lr-left"><div class="lr-name">🏏 IPL Final</div><div class="lr-sub">22 Jul · Bengaluru · 2 seats</div></div><div class="lr-amt">₹5,000</div></div>
+                <div class="lrow"><div class="lr-left"><div class="lr-name">🎵 Arijit Singh Concert</div><div class="lr-sub">28 Jul · YMCA Chennai</div></div><div class="lr-amt">₹3,500</div></div>
+                <div class="lrow"><div class="lr-left"><div class="lr-name">😂 Comedy Night</div><div class="lr-sub">10 Aug · Chennai</div></div><div class="lr-amt">₹1,200</div></div>
+            </div>
+            <div id="bt-mov" style="display:none">
+                <div class="lrow"><div class="lr-left"><div class="lr-name">🎬 Pushpa 2 — PVR IMAX</div><div class="lr-sub">16 Jul · 2 tickets</div></div><div class="lr-amt">₹800</div></div>
+                <div class="lrow"><div class="lr-left"><div class="lr-name">🍿 Raayan — INOX</div><div class="lr-sub">14 Jul · 2 tickets</div></div><div class="lr-amt">₹750</div></div>
+                <div class="lrow"><div class="lr-left"><div class="lr-name">🎥 Kalki 2898 AD</div><div class="lr-sub">10 Jul · 2 tickets</div></div><div class="lr-amt">₹900</div></div>
+            </div>
+            <div id="bt-trv" style="display:none">
+                <div class="lrow"><div class="lr-left"><div class="lr-name">✈️ IndiGo — Chennai→Delhi</div><div class="lr-sub">18 Jul · 2 passengers</div></div><div class="lr-amt">₹8,400</div></div>
+                <div class="lrow"><div class="lr-left"><div class="lr-name">🚇 Chennai Metro Monthly</div><div class="lr-sub">01 Jul · Smart Card</div></div><div class="lr-amt">₹900</div></div>
+                <div class="lrow"><div class="lr-left"><div class="lr-name">🚕 Ola — Airport Drop</div><div class="lr-sub">13 Jul</div></div><div class="lr-amt">₹650</div></div>
+                <div class="lrow"><div class="lr-left"><div class="lr-name">⛽ Indian Oil — 45L</div><div class="lr-sub">11 Jul</div></div><div class="lr-amt">₹4,680</div></div>
+            </div>
         </div>
-        <div class="settings-section">
-          <div class="settings-item"><i class="ti ti-key" style="color:var(--wa)"></i><div class="settings-item-text"><div class="settings-item-title">Account</div><div class="settings-item-sub">Privacy, security, change number</div></div><div class="settings-item-right"><i class="ti ti-chevron-right"></i></div></div>
-          <div class="settings-item"><i class="ti ti-lock" style="color:#3498db"></i><div class="settings-item-text"><div class="settings-item-title">Privacy</div><div class="settings-item-sub">Block contacts, disappearing messages</div></div><div class="settings-item-right"><i class="ti ti-chevron-right"></i></div></div>
-          <div class="settings-item"><i class="ti ti-bell" style="color:#e67e22"></i><div class="settings-item-text"><div class="settings-item-title">Notifications</div><div class="settings-item-sub">Message, group and call tones</div></div><div class="settings-item-right"><i class="ti ti-chevron-right"></i></div></div>
-          <div class="settings-item"><i class="ti ti-device-mobile" style="color:#9b59b6"></i><div class="settings-item-text"><div class="settings-item-title">Linked devices</div><div class="settings-item-sub">WhatsApp Web and Desktop</div></div><div class="settings-item-right"><i class="ti ti-chevron-right"></i></div></div>
-          <div class="settings-item" onclick="go('v-curr-settings')"><i class="ti ti-currency-rupee" style="color:var(--wa)"></i><div class="settings-item-text"><div class="settings-item-title">Currency settings</div><div class="settings-item-sub">Banks, UPI, receipts, budget</div></div><div class="settings-item-right"><i class="ti ti-chevron-right"></i></div></div>
-          <div class="settings-item"><i class="ti ti-photo" style="color:#1abc9c"></i><div class="settings-item-text"><div class="settings-item-title">Storage and data</div><div class="settings-item-sub">Network usage, auto-download</div></div><div class="settings-item-right"><i class="ti ti-chevron-right"></i></div></div>
-          <div class="settings-item"><i class="ti ti-help" style="color:#e74c3c"></i><div class="settings-item-text"><div class="settings-item-title">Help</div><div class="settings-item-sub">Help centre, contact us, privacy policy</div></div><div class="settings-item-right"><i class="ti ti-chevron-right"></i></div></div>
+
+        <!-- ═══ SPENDING ═══ -->
+        <div class="screen currency-child" id="s-spend">
+            <div class="screen-hdr"><button class="back-btn" onclick="go('s-currency','b-home')">←</button><h2>Spending Analytics</h2></div>
+            <div class="filters"><button class="chip active" onclick="fc(this)">This Month</button><button class="chip" onclick="fc(this)">Last Month</button><button class="chip" onclick="fc(this)">3 Months</button><button class="chip" onclick="fc(this)">6 Months</button><button class="chip" onclick="fc(this)">This Year</button></div>
+            <div class="sp-sum"><div class="ss"><div class="ss-v">₹13,150</div><div class="ss-l">Total Spent</div></div><div class="ss"><div class="ss-v">47</div><div class="ss-l">Transactions</div></div><div class="ss"><div class="ss-v">₹3,200</div><div class="ss-l">Saved</div></div></div>
+            <div class="cbtn-row"><button class="cbtn active" onclick="swChart(this,'pie')">🥧 Pie</button><button class="cbtn" onclick="swChart(this,'bar')">📊 Bar</button><button class="cbtn" onclick="swChart(this,'line')">📈 Line</button></div>
+            <div class="chart-box"><canvas id="chart1"></canvas></div>
+            <button class="exp-btn" onclick="alert('📥 Exported as CSV / PDF / Excel')">📥 Export Data</button>
+            <div class="sec-label">Category Breakdown</div>
+            <div class="lrow"><div class="lr-left"><div class="lr-name">🏠 Rent & Utilities</div><div class="lr-sub">Electricity, Water, Broadband</div></div><div class="lr-amt">₹3,999</div></div>
+            <div class="lrow"><div class="lr-left"><div class="lr-name">🛒 Groceries</div><div class="lr-sub">D-Mart, Big Bazaar</div></div><div class="lr-amt">₹3,850</div></div>
+            <div class="lrow"><div class="lr-left"><div class="lr-name">⛽ Travel & Fuel</div><div class="lr-sub">Indian Oil, Ola, Metro</div></div><div class="lr-amt">₹6,230</div></div>
+            <div class="lrow"><div class="lr-left"><div class="lr-name">🍽️ Food & Dining</div><div class="lr-sub">Swiggy, Zomato, Restaurants</div></div><div class="lr-amt">₹3,070</div></div>
+            <div class="lrow"><div class="lr-left"><div class="lr-name">🎬 Entertainment</div><div class="lr-sub">Movies, Events, Concerts</div></div><div class="lr-amt">₹1,900</div></div>
+            <div class="lrow"><div class="lr-left"><div class="lr-name">👗 Shopping</div><div class="lr-sub">Nike, Books</div></div><div class="lr-amt">₹5,180</div></div>
+            <div class="lrow"><div class="lr-left"><div class="lr-name">🏥 Medical</div><div class="lr-sub">Apollo, MedPlus</div></div><div class="lr-amt">₹770</div></div>
         </div>
-        <div style="padding:14px;text-align:center;font-size:11px;color:#aaa">WhatsApp + PAYCEIPT Concept · v2.0</div>
-      </div>
-    </div>
 
-  </div>
-</div>
-
-<!-- ══ CHAT: APOLLO ══ -->
-<div class="view" id="v-chat-apollo" style="flex-direction:column;background:var(--msg-bg)">
-  <div class="topbar"><div class="ti-btn" onclick="back()"><i class="ti ti-arrow-left"></i></div><div class="av" style="background:#e74c3c;width:34px;height:34px;font-size:13px">A</div><div class="topbar-sub"><div class="t1">Apollo Pharmacy</div><div class="t2">Official merchant · online</div></div></div>
-  <div class="msgs">
-    <div class="msg r">Hi Praveen! You paid ₹540 at Apollo Pharmacy, Thiruverkadu.<div class="msg-t">11:58</div></div>
-    <div class="msg r" style="padding:0;background:transparent;max-width:240px">
-      <div class="receipt-bubble" onclick="go('v-receipt-apollo')">
-        <div class="rb-head"><i class="ti ti-file-invoice"></i><span>PAYCEIPT — Digital Bill</span></div>
-        <div class="rb-row"><span>Dolo 650mg Strip ×2</span><span>₹90</span></div>
-        <div class="rb-row"><span>Vitamin C 500mg ×1</span><span>₹180</span></div>
-        <div class="rb-row"><span>Elastic Bandage 6cm ×1</span><span>₹220</span></div>
-        <div class="rb-row" style="color:#888;font-size:10px"><span>GST 12%</span><span>₹50</span></div>
-        <div class="rb-tot"><span>Total</span><span>₹540</span></div>
-        <div style="font-size:9px;color:var(--wa);margin-top:6px">🖨 Printer suppressed · Tap to view full receipt</div>
-      </div>
-      <div class="msg-t" style="color:#667781;font-size:10px;margin-top:3px">11:58</div>
-    </div>
-    <div class="msg s">Thanks! 🙏 No paper receipt needed.<div class="msg-t">11:59</div></div>
-    <div class="msg s">Warranty on bandage tracked ✅<div class="msg-t">12:00</div></div>
-  </div>
-  <div class="chat-bar"><input class="chat-inp" placeholder="Type a message"><div class="send-b"><i class="ti ti-send"></i></div></div>
-</div>
-
-<!-- ══ CHAT: PRAVEEN ══ -->
-<div class="view" id="v-chat-praveen" style="flex-direction:column;background:var(--msg-bg)">
-  <div class="topbar"><div class="ti-btn" onclick="back()"><i class="ti ti-arrow-left"></i></div><div class="av" style="background:#8e44ad;width:34px;height:34px;font-size:13px">P</div><div class="topbar-sub"><div class="t1">Praveen (You)</div><div class="t2">Notes to self</div></div></div>
-  <div class="msgs">
-    <div class="msg s">Bought medicines from Apollo 💊<div class="msg-t">11:58</div></div>
-    <div class="msg s" style="padding:0;background:transparent;max-width:240px">
-      <div class="receipt-bubble" onclick="go('v-receipt-apollo')">
-        <div class="rb-head"><i class="ti ti-file-invoice"></i><span>Auto-saved by PAYCEIPT</span></div>
-        <div class="rb-row"><span>Apollo Pharmacy</span><span>₹540</span></div>
-        <div class="rb-row"><span>3 items · GST included</span><span></span></div>
-        <div style="font-size:9px;color:var(--wa);margin-top:6px;font-weight:700">⚡ Paper not printed · 48g paper saved</div>
-      </div>
-      <div class="msg-t" style="color:#667781;font-size:10px;margin-top:3px">11:58</div>
-    </div>
-    <div class="msg s">DMart groceries yesterday — all saved too! 🛒<div class="msg-t">Yesterday</div></div>
-    <div class="msg s" style="padding:0;background:transparent;max-width:240px">
-      <div class="receipt-bubble" onclick="go('v-receipt-dmart')">
-        <div class="rb-head"><i class="ti ti-shopping-cart"></i><span>DMart — 12 items</span></div>
-        <div class="rb-row"><span>Fresh Vegetables (5 types)</span><span>₹340</span></div>
-        <div class="rb-row"><span>Rice, Pulses, Oil</span><span>₹890</span></div>
-        <div class="rb-row"><span>Snacks & Biscuits</span><span>₹460</span></div>
-        <div class="rb-row"><span>+ 9 more items</span><span></span></div>
-        <div class="rb-tot"><span>Total</span><span>₹2,340</span></div>
-      </div>
-      <div class="msg-t" style="color:#667781;font-size:10px;margin-top:3px">Yesterday</div>
-    </div>
-  </div>
-  <div class="chat-bar"><input class="chat-inp" placeholder="Type a message"><div class="send-b"><i class="ti ti-send"></i></div></div>
-</div>
-
-<!-- ══ QR SCAN ══ -->
-<div class="view" id="v-qr-scan" style="flex-direction:column">
-  <div class="topbar"><div class="ti-btn" onclick="back()"><i class="ti ti-arrow-left"></i></div><div class="topbar-sub"><div class="t1">Scan & Pay</div><div class="t2">Point at merchant QR code</div></div></div>
-  <div class="qr-bg">
-    <div class="qr-frame"><div class="qr-corner2 tl"></div><div class="qr-corner2 tr"></div><div class="qr-corner2 bl"></div><div class="qr-corner2 br"></div><div class="scan-anim"></div>
-      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
-        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;width:90px;height:90px;padding:6px">
-          <div style="grid-column:1/4;grid-row:1/4;background:var(--wa);border-radius:3px"></div>
-          <div style="grid-column:5/8;grid-row:1/4;background:var(--wa);border-radius:3px"></div>
-          <div style="grid-column:1/4;grid-row:5/8;background:var(--wa);border-radius:3px"></div>
-          <div style="grid-column:5;grid-row:5;background:var(--wa)"></div>
-          <div style="grid-column:7;grid-row:6;background:var(--wa)"></div>
-          <div style="grid-column:6;grid-row:7;background:var(--wa)"></div>
+        <!-- ═══ SUBSCRIPTIONS ═══ -->
+        <div class="screen currency-child" id="s-subs">
+            <div class="screen-hdr"><button class="back-btn" onclick="go('s-currency','b-home')">←</button><h2>Subscriptions</h2></div>
+            <div class="filters"><button class="chip active" onclick="fc(this)">All</button><button class="chip" onclick="fc(this)">Active</button><button class="chip" onclick="fc(this)">Renewing Soon</button><button class="chip" onclick="fc(this)">Monthly</button><button class="chip" onclick="fc(this)">Yearly</button></div>
+            <div class="sub-row"><div><div class="sr-name">📺 Netflix <span class="ren-badge">3d</span></div><div class="sr-date">Renews: 20 Jul</div></div><div><div class="sr-amt">₹649</div><div class="sr-freq">/month</div></div></div>
+            <div class="sub-row"><div><div class="sr-name">🎵 Spotify <span class="ren-badge">5d</span></div><div class="sr-date">Renews: 22 Jul</div></div><div><div class="sr-amt">₹119</div><div class="sr-freq">/month</div></div></div>
+            <div class="sub-row"><div><div class="sr-name">📦 Amazon Prime</div><div class="sr-date">Renews: 15 Aug</div></div><div><div class="sr-amt">₹1,499</div><div class="sr-freq">/year</div></div></div>
+            <div class="sub-row"><div><div class="sr-name">🎬 Disney+ Hotstar</div><div class="sr-date">Renews: 10 Aug</div></div><div><div class="sr-amt">₹499</div><div class="sr-freq">/month</div></div></div>
+            <div class="sub-row"><div><div class="sr-name">💪 Cult.fit Gym</div><div class="sr-date">Renews: 05 Aug</div></div><div><div class="sr-amt">₹2,500</div><div class="sr-freq">/month</div></div></div>
+            <div class="sub-row"><div><div class="sr-name">📡 ACT Fibernet</div><div class="sr-date">Renews: 30 Jul</div></div><div><div class="sr-amt">₹999</div><div class="sr-freq">/month</div></div></div>
+            <div class="sub-row"><div><div class="sr-name">☁️ iCloud Storage</div><div class="sr-date">Renews: 18 Aug</div></div><div><div class="sr-amt">₹75</div><div class="sr-freq">/month</div></div></div>
+            <div class="stats" style="padding:12px 16px;">
+                <div class="stat"><div class="stat-v">7</div><div class="stat-l">Active Subs</div></div>
+                <div class="stat"><div class="stat-v">₹6,340</div><div class="stat-l">Monthly Total</div></div>
+            </div>
         </div>
-      </div>
+
+        <!-- ═══ INBOX ═══ -->
+        <div class="screen currency-child" id="s-inbox">
+            <div class="screen-hdr"><button class="back-btn" onclick="go('s-currency','b-home')">←</button><h2>Universal Inbox</h2></div>
+            <div class="filters"><button class="chip active" onclick="fc(this)">All</button><button class="chip" onclick="fc(this)">Online</button><button class="chip" onclick="fc(this)">Offline</button><button class="chip" onclick="fc(this)">UPI</button><button class="chip" onclick="fc(this)">Credit Card</button></div>
+            <div class="tl"><div class="tl-ico">📦</div><div class="tl-body"><div class="tl-name">Amazon — Book</div><div class="tl-sub">Clean Code | 14 Jul</div><div class="tl-amt">₹399</div></div></div>
+            <div class="tl"><div class="tl-ico">🛍️</div><div class="tl-body"><div class="tl-name">Flipkart — Headphones</div><div class="tl-sub">Sony WH-1000XM5 | 13 Jul</div><div class="tl-amt">₹12,999</div></div></div>
+            <div class="tl"><div class="tl-ico">🍕</div><div class="tl-body"><div class="tl-name">Swiggy</div><div class="tl-sub">Biryani + 2 items | 13 Jul</div><div class="tl-amt">₹450</div></div></div>
+            <div class="tl"><div class="tl-ico">🍽️</div><div class="tl-body"><div class="tl-name">Zomato — Saravana Bhavan</div><div class="tl-sub">Dinner | 12 Jul</div><div class="tl-amt">₹650</div></div></div>
+            <div class="tl"><div class="tl-ico">🏪</div><div class="tl-body"><div class="tl-name">D-Mart</div><div class="tl-sub">Groceries | 11 Jul</div><div class="tl-amt">₹2,100</div></div></div>
+            <div class="tl"><div class="tl-ico">⛽</div><div class="tl-body"><div class="tl-name">Indian Oil — Fuel</div><div class="tl-sub">45L Petrol | 11 Jul</div><div class="tl-amt">₹4,680</div></div></div>
+            <div class="tl"><div class="tl-ico">💳</div><div class="tl-body"><div class="tl-name">ICICI Credit Card</div><div class="tl-sub">Statement | 10 Jul</div><div class="tl-amt">₹28,500</div></div></div>
+        </div>
+
+        <!-- ═══ QR WALLET ═══ -->
+        <div class="screen currency-child" id="s-wallet">
+            <div class="screen-hdr"><button class="back-btn" onclick="go('s-currency','b-home')">←</button><h2>QR Wallet</h2></div>
+            <div class="filters"><button class="chip active" onclick="fc(this)">All</button><button class="chip" onclick="fc(this)">Transport</button><button class="chip" onclick="fc(this)">Entertainment</button><button class="chip" onclick="fc(this)">Shopping</button></div>
+            <div class="wgrid">
+                <div class="wcard"><div class="wcard-ico">🏪</div><div class="wcard-lbl">Store QR</div></div>
+                <div class="wcard"><div class="wcard-ico">🎟️</div><div class="wcard-lbl">Movie Tickets</div></div>
+                <div class="wcard"><div class="wcard-ico">✈️</div><div class="wcard-lbl">Flight Tickets</div></div>
+                <div class="wcard"><div class="wcard-ico">🚇</div><div class="wcard-lbl">Metro QR</div></div>
+                <div class="wcard"><div class="wcard-ico">🅿️</div><div class="wcard-lbl">Parking QR</div></div>
+                <div class="wcard"><div class="wcard-ico">🏛️</div><div class="wcard-lbl">Temple Entry</div></div>
+                <div class="wcard"><div class="wcard-ico">🎸</div><div class="wcard-lbl">Concert QR</div></div>
+                <div class="wcard"><div class="wcard-ico">🎪</div><div class="wcard-lbl">Events QR</div></div>
+                <div class="wcard" style="border:2px dashed var(--wa-green);background:#fff"><div class="wcard-ico">➕</div><div class="wcard-lbl" style="color:var(--wa-green)">Add New</div></div>
+            </div>
+        </div>
+
+        <!-- ═══ ACCOUNTS ═══ -->
+        <div class="screen currency-child" id="s-accounts">
+            <div class="screen-hdr"><button class="back-btn" onclick="go('s-currency','b-home')">←</button><h2>Accounts</h2></div>
+            <div class="acc-add"><div style="font-size:28px">➕</div><div style="font-size:14px;font-weight:600;color:var(--wa-green)">Add New Account</div></div>
+            <div class="lrow"><div class="lr-left"><div class="lr-name">🏦 SBI Savings</div><div class="lr-sub">₹48,230 available</div></div><div class="lr-amt">•••• 1521</div></div>
+            <div class="lrow"><div class="lr-left"><div class="lr-name">🏦 HDFC Bank</div><div class="lr-sub">₹1,12,800 available</div></div><div class="lr-amt">•••• 5432</div></div>
+            <div class="lrow"><div class="lr-left"><div class="lr-name">💳 ICICI Credit Card</div><div class="lr-sub">Cashback Enabled</div></div><div class="lr-amt">•••• 7890</div></div>
+            <div class="sec-label">💰 Rewards & Cashback</div>
+            <div class="stats" style="padding:0 16px 16px;">
+                <div class="stat"><div class="stat-v">₹2,450</div><div class="stat-l">Card Points</div></div>
+                <div class="stat"><div class="stat-v">₹580</div><div class="stat-l">Cashback</div></div>
+            </div>
+        </div>
+
+    </div><!-- end .content -->
+
+    <!-- QR SCANNER -->
+    <div class="qr-overlay" id="qr-ov">
+        <div style="color:#fff;font-size:14px;font-weight:600;letter-spacing:0.5px">PAYCEIPT · QR Scanner</div>
+        <div class="qr-frame"><div class="qr-corner tl"></div><div class="qr-corner tr"></div><div class="qr-corner bl"></div><div class="qr-corner br"></div><div class="qr-line"></div></div>
+        <div class="qr-text">Point camera at merchant QR code</div>
+        <div class="qr-note">Payment auto-processes · Digital bill sent instantly to your WhatsApp</div>
+        <button class="qr-close-btn" onclick="closeQR()">✕ Close Scanner</button>
     </div>
-    <div class="qr-hint">Scan UPI QR at merchant<br>Bill saved automatically 🧾<br><span style="color:var(--wa);font-size:11px">Also works for cash — scan merchant bill QR</span></div>
-  </div>
-  <div class="qr-actions">
-    <div class="qr-act" onclick="go('v-pay-success')"><i class="ti ti-qrcode"></i><span>Simulate payment</span></div>
-    <div class="qr-act"><i class="ti ti-photo"></i><span>Gallery</span></div>
-    <div class="qr-act"><i class="ti ti-cash"></i><span>Cash QR</span></div>
-  </div>
+
+    <!-- BOTTOM NAV -->
+    <div class="bottom-nav" id="bnav">
+        <button class="bnav-btn active" id="b-home" onclick="bnav(this,'s-currency')"><div class="bi">🏠</div><div>Home</div></button>
+        <button class="bnav-btn" id="b-bills" onclick="bnav(this,'s-bills')"><div class="bi">📋</div><div>Bills</div></button>
+        <button class="bnav-btn" id="b-spend" onclick="bnav(this,'s-spend')"><div class="bi">📊</div><div>Spending</div></button>
+        <button class="bnav-btn" id="b-subs" onclick="bnav(this,'s-subs')"><div class="bi">🔄</div><div>Subs</div></button>
+        <button class="bnav-btn" id="b-set" onclick="bnav(this,'s-accounts')"><div class="bi">⚙️</div><div>Settings</div></button>
+    </div>
 </div>
-
-<!-- ══ PAY SUCCESS ══ -->
-<div class="view" id="v-pay-success" style="flex-direction:column">
-  <div class="topbar"><div class="ti-btn" onclick="back()"><i class="ti ti-arrow-left"></i></div><div class="topbar-title">Payment complete</div></div>
-  <div class="pay-win">
-    <div class="ok-circle"><i class="ti ti-check"></i></div>
-    <div style="font-size:18px;font-weight:700;color:#111">Payment successful!</div>
-    <div style="font-size:28px;font-weight:700;color:#111">₹540</div>
-    <div style="font-size:12px;color:#888">Paid to Apollo Pharmacy, Thiruverkadu</div>
-    <div style="width:100%;background:#fff3e0;border-radius:10px;padding:10px;border:1px solid #ffe0b2;text-align:center">
-      <div style="font-size:11px;color:#e65100;font-weight:700">⚡ PAYCEIPT running...</div>
-      <div style="font-size:10px;color:#bf360c;margin-top:2px">Fetching bill · Suppressing printer · Saving receipt</div>
-    </div>
-    <div class="eco-bar">
-      <div class="eco-box"><div class="eco-val">48g</div><div class="eco-lbl">Paper saved</div></div>
-      <div class="eco-box"><div class="eco-val">0.017kg</div><div class="eco-lbl">CO₂ avoided</div></div>
-      <div class="eco-box"><div class="eco-val">47</div><div class="eco-lbl">Bills saved total</div></div>
-    </div>
-    <div class="mini-receipt">
-      <div class="mr-head"><i class="ti ti-file-invoice"></i><span>Digital receipt saved ✓</span></div>
-      <div class="mr-rows">
-        <div class="mr-row"><span>Dolo 650mg Strip ×2</span><span>₹90</span></div>
-        <div class="mr-row"><span>Vitamin C 500mg ×1</span><span>₹180</span></div>
-        <div class="mr-row"><span>Elastic Bandage ×1</span><span>₹220</span></div>
-        <div class="mr-row"><span>GST 12%</span><span>₹50</span></div>
-        <div class="mr-row" style="font-weight:700;margin-top:4px;border-top:.5px solid #c8e6c9;padding-top:4px"><span>Total</span><span>₹540</span></div>
-      </div>
-      <div style="font-size:10px;color:#2e7d32;margin-top:8px;background:#e8f5e9;border-radius:6px;padding:5px;text-align:center">🖨 Printer suppressed · Zero paper waste · Warranty tracked</div>
-    </div>
-    <button class="big-btn" onclick="go('v-receipt-apollo')">View full receipt</button>
-    <div class="sm-btns">
-      <button class="sm-btn" onclick="go('v-main')">← Back to chat</button>
-      <button class="sm-btn" onclick="switchCurrency();go('v-main')">See all bills</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══ RECEIPT: APOLLO ══ -->
-<div class="view" id="v-receipt-apollo" style="flex-direction:column">
-  <div class="topbar"><div class="ti-btn" onclick="back()"><i class="ti ti-arrow-left"></i></div><div class="topbar-title">Digital Receipt</div><div class="ti-btn"><i class="ti ti-share"></i></div></div>
-  <div class="rd-head"><div class="rd-icon"><i class="ti ti-building-store"></i></div><div class="rd-merchant">Apollo Pharmacy</div><div class="rd-meta">Thiruverkadu, Chennai 600077 · GSTIN: 33AABCA1234A1Z5</div><div class="rd-meta" style="margin-top:3px">14 Jul 2026 · 11:58 AM · UPI Ref: TXN94633</div></div>
-  <div class="rd-body">
-    <div class="rd-card">
-      <div class="rd-section">Items purchased</div>
-      <div class="rd-row"><div class="rd-name">Dolo 650mg Tablet Strip</div><div class="rd-qty">×2</div><div class="rd-price">₹90</div></div>
-      <div class="rd-row"><div class="rd-name">Vitamin C 500mg Tablet</div><div class="rd-qty">×1</div><div class="rd-price">₹180</div></div>
-      <div class="rd-row"><div class="rd-name">Elastic Bandage 6cm</div><div class="rd-qty">×1</div><div class="rd-price">₹220</div></div>
-      <div style="border-top:.5px solid #eee;margin:6px 0"></div>
-      <div class="gst-r"><span>Subtotal</span><span>₹490</span></div>
-      <div class="gst-r"><span>CGST 6%</span><span>₹29.40</span></div>
-      <div class="gst-r"><span>SGST 6%</span><span>₹29.40</span></div>
-      <div style="border-top:1px solid #eee;margin-top:6px;padding-top:8px"><div class="rd-total"><span>Total paid</span><span>₹540</span></div></div>
-    </div>
-    <div class="warranty-box"><i class="ti ti-shield-check"></i><div><h5>Warranty tracked ✓</h5><p>Elastic Bandage 6cm — valid until Jan 2027. Claim directly from this receipt.</p></div></div>
-    <div class="eco-card"><i class="ti ti-leaf"></i><div><strong>Environment saved 🌿</strong><br>48g thermal paper not printed. 0.017kg CO₂ avoided. BPA chemicals eliminated.</div></div>
-    <div class="rd-card">
-      <div class="rd-section">Payment details</div>
-      <div class="rd-row"><div class="rd-name">Payment mode</div><div class="rd-price" style="color:var(--wad)">WhatsApp UPI</div></div>
-      <div class="rd-row"><div class="rd-name">UPI reference</div><div class="rd-price" style="font-size:10px">TXN94633</div></div>
-      <div class="rd-row"><div class="rd-name">Paper receipt</div><div class="rd-price" style="color:#2e7d32">Not printed ✓</div></div>
-    </div>
-    <div class="act-row">
-      <div class="act-btn"><i class="ti ti-download" style="font-size:13px"></i>Download</div>
-      <div class="act-btn"><i class="ti ti-share" style="font-size:13px"></i>Share</div>
-      <div class="act-btn"><i class="ti ti-flag" style="font-size:13px"></i>Claim</div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ RECEIPT: DMART ══ -->
-<div class="view" id="v-receipt-dmart" style="flex-direction:column">
-  <div class="topbar"><div class="ti-btn" onclick="back()"><i class="ti ti-arrow-left"></i></div><div class="topbar-title">Digital Receipt</div><div class="ti-btn"><i class="ti ti-share"></i></div></div>
-  <div class="rd-head" style="background:#6a1b9a"><div class="rd-icon"><i class="ti ti-shopping-cart"></i></div><div class="rd-merchant">DMart Supermarket</div><div class="rd-meta">Thiruverkadu Rd, Chennai 600077 · GSTIN: 33AABCD5678B1Z3</div><div class="rd-meta" style="margin-top:3px">13 Jul 2026 · 7:30 PM · UPI Ref: TXN94021</div></div>
-  <div class="rd-body">
-    <div class="rd-card">
-      <div class="rd-section">12 items purchased</div>
-      <div class="rd-row"><div class="rd-name">Fresh Tomatoes 1kg</div><div class="rd-qty">×1</div><div class="rd-price">₹60</div></div>
-      <div class="rd-row"><div class="rd-name">Onions 2kg</div><div class="rd-qty">×1</div><div class="rd-price">₹80</div></div>
-      <div class="rd-row"><div class="rd-name">Potatoes 2kg</div><div class="rd-qty">×1</div><div class="rd-price">₹70</div></div>
-      <div class="rd-row"><div class="rd-name">Spinach & Coriander</div><div class="rd-qty">×2</div><div class="rd-price">₹40</div></div>
-      <div class="rd-row"><div class="rd-name">Garlic 250g</div><div class="rd-qty">×1</div><div class="rd-price">₹90</div></div>
-      <div class="rd-row"><div class="rd-name">India Gate Basmati Rice 5kg</div><div class="rd-qty">×1</div><div class="rd-price">₹490</div></div>
-      <div class="rd-row"><div class="rd-name">Toor Dal 1kg</div><div class="rd-qty">×2</div><div class="rd-price">₹180</div></div>
-      <div class="rd-row"><div class="rd-name">Sunflower Oil 1L</div><div class="rd-qty">×1</div><div class="rd-price">₹220</div></div>
-      <div class="rd-row"><div class="rd-name">Biscuits — Parle G 800g</div><div class="rd-qty">×2</div><div class="rd-price">₹80</div></div>
-      <div class="rd-row"><div class="rd-name">Lay's Chips 4-pack</div><div class="rd-qty">×1</div><div class="rd-price">₹80</div></div>
-      <div class="rd-row"><div class="rd-name">Milk 1L pack</div><div class="rd-qty">×3</div><div class="rd-price">₹180</div></div>
-      <div class="rd-row"><div class="rd-name">Curd 500ml</div><div class="rd-qty">×2</div><div class="rd-price">₹100</div></div>
-      <div style="border-top:.5px solid #eee;margin:6px 0"></div>
-      <div class="gst-r"><span>Subtotal</span><span>₹1,670</span></div>
-      <div class="gst-r"><span>CGST (5% avg)</span><span>₹83.50</span></div>
-      <div class="gst-r"><span>SGST (5% avg)</span><span>₹83.50</span></div>
-      <div class="gst-r"><span>DMart member discount</span><span style="color:#2e7d32">-₹497</span></div>
-      <div style="border-top:1px solid #eee;margin-top:6px;padding-top:8px"><div class="rd-total"><span>Total paid</span><span>₹2,340</span></div></div>
-    </div>
-    <div class="eco-card"><i class="ti ti-leaf"></i><div><strong>Environment saved 🌿</strong><br>12 items · 380g thermal paper not printed · 0.14kg CO₂ avoided this bill alone.</div></div>
-    <div class="rd-card">
-      <div class="rd-section">Payment</div>
-      <div class="rd-row"><div class="rd-name">Payment mode</div><div class="rd-price" style="color:var(--wad)">WhatsApp UPI</div></div>
-      <div class="rd-row"><div class="rd-name">Paper receipt</div><div class="rd-price" style="color:#2e7d32">Not printed ✓</div></div>
-    </div>
-    <div class="act-row">
-      <div class="act-btn"><i class="ti ti-download" style="font-size:13px"></i>Download</div>
-      <div class="act-btn"><i class="ti ti-share" style="font-size:13px"></i>Share</div>
-      <div class="act-btn"><i class="ti ti-exchange" style="font-size:13px"></i>Return</div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ RECEIPT: IOCL ══ -->
-<div class="view" id="v-receipt-iocl" style="flex-direction:column">
-  <div class="topbar"><div class="ti-btn" onclick="back()"><i class="ti ti-arrow-left"></i></div><div class="topbar-title">Digital Receipt</div><div class="ti-btn"><i class="ti ti-share"></i></div></div>
-  <div class="rd-head" style="background:#e65100"><div class="rd-icon"><i class="ti ti-gas-station"></i></div><div class="rd-merchant">Indian Oil Petrol Bunk</div><div class="rd-meta">Thiruverkadu, Chennai 600077 · Dealer: N.Suresh Kumar</div><div class="rd-meta" style="margin-top:3px">14 Jul 2026 · 8:15 AM · UPI Ref: TXN93855</div></div>
-  <div class="rd-body">
-    <div class="rd-card">
-      <div class="rd-section">Fuel details</div>
-      <div class="rd-row"><div class="rd-name">Petrol (MS)</div><div class="rd-qty">4.5L</div><div class="rd-price">₹450</div></div>
-      <div class="rd-row"><div class="rd-name">Rate per litre</div><div class="rd-qty"></div><div class="rd-price">₹100/L</div></div>
-      <div class="rd-row"><div class="rd-name">Pump ID</div><div class="rd-qty"></div><div class="rd-price" style="font-size:11px">PMP-003</div></div>
-      <div class="rd-row"><div class="rd-name">Nozzle No.</div><div class="rd-qty"></div><div class="rd-price" style="font-size:11px">N-02</div></div>
-      <div style="border-top:.5px solid #eee;margin:6px 0"></div>
-      <div class="gst-r"><span>Fuel value (excl. tax)</span><span>₹383.05</span></div>
-      <div class="gst-r"><span>CGST + SGST (excl., state levy)</span><span>₹66.95</span></div>
-      <div style="border-top:1px solid #eee;margin-top:6px;padding-top:8px"><div class="rd-total"><span>Total paid</span><span>₹450</span></div></div>
-    </div>
-    <div class="eco-card"><i class="ti ti-leaf"></i><div><strong>Receipt saved digitally 🌿</strong><br>Petrol station thermal receipt (120mm roll) not printed. 35g paper saved. 0.012kg CO₂ avoided.</div></div>
-    <div class="act-row">
-      <div class="act-btn"><i class="ti ti-download" style="font-size:13px"></i>Download</div>
-      <div class="act-btn"><i class="ti ti-share" style="font-size:13px"></i>Share</div>
-      <div class="act-btn"><i class="ti ti-receipt" style="font-size:13px"></i>Expense</div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ RECEIPT: CROMA ══ -->
-<div class="view" id="v-receipt-croma" style="flex-direction:column">
-  <div class="topbar"><div class="ti-btn" onclick="back()"><i class="ti ti-arrow-left"></i></div><div class="topbar-title">Digital Receipt</div><div class="ti-btn"><i class="ti ti-share"></i></div></div>
-  <div class="rd-head" style="background:#1b5e20"><div class="rd-icon"><i class="ti ti-device-laptop"></i></div><div class="rd-merchant">Croma Electronics</div><div class="rd-meta">Anna Nagar, Chennai 600040 · GSTIN: 33AABCE9012F1Z8</div><div class="rd-meta" style="margin-top:3px">10 Jul 2026 · 4:45 PM · UPI Ref: TXN91244</div></div>
-  <div class="rd-body">
-    <div class="rd-card">
-      <div class="rd-section">Items purchased</div>
-      <div class="rd-row"><div class="rd-name">Sony WH-CH520 Wireless Headphones (Black)</div><div class="rd-qty">×1</div><div class="rd-price">₹2,999</div></div>
-      <div style="border-top:.5px solid #eee;margin:6px 0"></div>
-      <div class="gst-r"><span>Subtotal</span><span>₹2,542.37</span></div>
-      <div class="gst-r"><span>CGST 9%</span><span>₹228.82</span></div>
-      <div class="gst-r"><span>SGST 9%</span><span>₹228.82</span></div>
-      <div style="border-top:1px solid #eee;margin-top:6px;padding-top:8px"><div class="rd-total"><span>Total paid</span><span>₹2,999</span></div></div>
-    </div>
-    <div class="warranty-box"><i class="ti ti-shield-check"></i><div><h5>Warranty: 1 year — valid until 10 Jul 2027 ✓</h5><p>Sony manufacturer warranty. Serial No: WH520BLK44291. Claim from this receipt at any Croma or Sony service centre. No physical bill needed.</p></div></div>
-    <div class="eco-card"><i class="ti ti-leaf"></i><div><strong>Electronics receipt saved 🌿</strong><br>Croma typically prints 2-3 page receipts for electronics. ~180g paper + warranty card saved. 0.065kg CO₂ avoided.</div></div>
-    <div class="act-row">
-      <div class="act-btn"><i class="ti ti-download" style="font-size:13px"></i>Download</div>
-      <div class="act-btn"><i class="ti ti-shield-check" style="font-size:13px"></i>Warranty</div>
-      <div class="act-btn"><i class="ti ti-exchange" style="font-size:13px"></i>Return</div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ ALL BILLS ══ -->
-<div class="view" id="v-all-bills" style="flex-direction:column">
-  <div class="topbar"><div class="ti-btn" onclick="back()"><i class="ti ti-arrow-left"></i></div><div class="topbar-title">All bills (47)</div><div class="ti-btn"><i class="ti ti-search"></i></div></div>
-  <div class="scroll" style="background:#f5f5f5;padding:10px">
-    <div style="display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;padding-bottom:4px">
-      <div style="background:var(--wa);color:#fff;font-size:11px;font-weight:600;border-radius:20px;padding:5px 12px;white-space:nowrap;flex-shrink:0">All</div>
-      <div style="background:#fff;color:#555;font-size:11px;font-weight:600;border-radius:20px;padding:5px 12px;white-space:nowrap;flex-shrink:0;border:.5px solid #e0e0e0">Grocery</div>
-      <div style="background:#fff;color:#555;font-size:11px;font-weight:600;border-radius:20px;padding:5px 12px;white-space:nowrap;flex-shrink:0;border:.5px solid #e0e0e0">Medical</div>
-      <div style="background:#fff;color:#555;font-size:11px;font-weight:600;border-radius:20px;padding:5px 12px;white-space:nowrap;flex-shrink:0;border:.5px solid #e0e0e0">Fuel</div>
-      <div style="background:#fff;color:#555;font-size:11px;font-weight:600;border-radius:20px;padding:5px 12px;white-space:nowrap;flex-shrink:0;border:.5px solid #e0e0e0">Warranty</div>
-    </div>
-    <div style="background:#fff;border-radius:12px;overflow:hidden">
-      <div class="bill-it" onclick="go('v-receipt-apollo')"><div class="bill-ic" style="background:#e3f2fd"><i class="ti ti-building-store" style="color:#1565c0"></i></div><div class="bill-inf"><div class="bill-m">Apollo Pharmacy</div><div class="bill-d">Today · 3 items</div></div><div class="bill-pr"><div class="bill-am">₹540</div><div class="bill-sv">Warranty ✓</div></div></div>
-      <div class="bill-it" onclick="go('v-receipt-dmart')"><div class="bill-ic" style="background:#f3e5f5"><i class="ti ti-shopping-cart" style="color:#6a1b9a"></i></div><div class="bill-inf"><div class="bill-m">DMart</div><div class="bill-d">Yesterday · 12 items</div></div><div class="bill-pr"><div class="bill-am">₹2,340</div><div class="bill-sv">Saved ✓</div></div></div>
-      <div class="bill-it" onclick="go('v-receipt-iocl')"><div class="bill-ic" style="background:#fff8e1"><i class="ti ti-gas-station" style="color:#f57f17"></i></div><div class="bill-inf"><div class="bill-m">Indian Oil</div><div class="bill-d">14 Jul · 4.5L petrol</div></div><div class="bill-pr"><div class="bill-am">₹450</div><div class="bill-sv">Saved ✓</div></div></div>
-      <div class="bill-it" onclick="go('v-receipt-croma')"><div class="bill-ic" style="background:#e8f5e9"><i class="ti ti-device-laptop" style="color:#2e7d32"></i></div><div class="bill-inf"><div class="bill-m">Croma Electronics</div><div class="bill-d">10 Jul · Sony headphones</div></div><div class="bill-pr"><div class="bill-am">₹2,999</div><div class="bill-sv">1yr warranty</div></div></div>
-      <div class="bill-it"><div class="bill-ic" style="background:#fce4ec"><i class="ti ti-salad" style="color:#880e4f"></i></div><div class="bill-inf"><div class="bill-m">Saravana Bhavan</div><div class="bill-d">8 Jul · Lunch for 3</div></div><div class="bill-pr"><div class="bill-am">₹840</div></div></div>
-      <div class="bill-it"><div class="bill-ic" style="background:#e3f2fd"><i class="ti ti-pill" style="color:#1565c0"></i></div><div class="bill-inf"><div class="bill-m">Apollo Pharmacy</div><div class="bill-d">5 Jul · BP meds</div></div><div class="bill-pr"><div class="bill-am">₹320</div></div></div>
-    </div>
-    <div style="background:#e8f5e9;border-radius:12px;padding:12px;margin-top:10px;text-align:center">
-      <div style="font-size:13px;font-weight:700;color:#1b5e20;margin-bottom:6px">Your eco impact — July 2026 🌿</div>
-      <div style="display:flex;justify-content:space-around">
-        <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:#2e7d32">2.3kg</div><div style="font-size:10px;color:#555">Paper saved</div></div>
-        <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:#2e7d32">0.83kg</div><div style="font-size:10px;color:#555">CO₂ avoided</div></div>
-        <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:#2e7d32">47</div><div style="font-size:10px;color:#555">Bills digital</div></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ ANALYTICS ══ -->
-<div class="view" id="v-analytics" style="flex-direction:column">
-  <div class="topbar"><div class="ti-btn" onclick="back()"><i class="ti ti-arrow-left"></i></div><div class="topbar-title">Spend analytics — July</div></div>
-  <div class="an-header"><div class="an-tot">Total spent this month</div><div class="an-amt">₹14,280</div><div class="an-vs">↓ 12% vs last month · You saved ₹1,960</div></div>
-  <div class="an-body">
-    <div class="an-card">
-      <div class="sec-lbl">By category</div>
-      <div class="bar-r"><div class="bar-lbl">Groceries</div><div class="bar-bg"><div class="bar-fill" style="width:75%;background:var(--wad)"></div></div><div class="bar-val">₹5,840</div></div>
-      <div class="bar-r"><div class="bar-lbl">Medical</div><div class="bar-bg"><div class="bar-fill" style="width:45%;background:#e74c3c"></div></div><div class="bar-val">₹3,120</div></div>
-      <div class="bar-r"><div class="bar-lbl">Fuel</div><div class="bar-bg"><div class="bar-fill" style="width:30%;background:#f39c12"></div></div><div class="bar-val">₹2,100</div></div>
-      <div class="bar-r"><div class="bar-lbl">Electronics</div><div class="bar-bg"><div class="bar-fill" style="width:22%;background:#2e7d32"></div></div><div class="bar-val">₹2,999</div></div>
-      <div class="bar-r"><div class="bar-lbl">Dining</div><div class="bar-bg"><div class="bar-fill" style="width:12%;background:#9b59b6"></div></div><div class="bar-val">₹840</div></div>
-    </div>
-    <div class="an-card">
-      <div class="sec-lbl">AI financial insights</div>
-      <div class="insight-it"><div class="ins-ic" style="background:#e8f5e9"><i class="ti ti-trending-down" style="color:#2e7d32"></i></div><div class="ins-txt"><h5>Grocery spend down 8%</h5><p>You saved ₹520 on groceries vs last month. DMart Sunday deals are helping. Keep it up!</p></div></div>
-      <div class="insight-it"><div class="ins-ic" style="background:#fff3e0"><i class="ti ti-alert-triangle" style="color:#e65100"></i></div><div class="ins-txt"><h5>Medical spend high this month</h5><p>₹3,120 spent on medical. Consider a health insurance plan to reduce costs.</p></div></div>
-      <div class="insight-it"><div class="ins-ic" style="background:#e3f2fd"><i class="ti ti-bulb" style="color:#1565c0"></i></div><div class="ins-txt"><h5>On track to save ₹28,400</h5><p>Based on July patterns you are saving well. Projected month-end savings look strong.</p></div></div>
-      <div class="insight-it"><div class="ins-ic" style="background:#f3e5f5"><i class="ti ti-shield-check" style="color:#6a1b9a"></i></div><div class="ins-txt"><h5>2 warranties expiring soon</h5><p>Croma headphones warranty expires in 364 days. Samsung AC warranty in 45 days.</p></div></div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ BUDGET ══ -->
-<div class="view" id="v-budget" style="flex-direction:column">
-  <div class="topbar"><div class="ti-btn" onclick="back()"><i class="ti ti-arrow-left"></i></div><div class="topbar-title">Budget — July 2026</div><div class="ti-btn"><i class="ti ti-edit"></i></div></div>
-  <div class="bud-header"><div class="bud-lbl">Total budget used</div><div class="bud-amt">₹14,280 / ₹20,000</div><div class="bud-prog-bg"><div class="bud-prog-fill" style="width:71%"></div></div><div class="bud-meta">71% used · 17 days remaining this month</div></div>
-  <div class="bud-body">
-    <div class="bud-card">
-      <div class="sec-lbl">Category budgets</div>
-      <div class="bud-row"><div class="bud-cat">🛒 Groceries</div><div class="bud-nums"><strong>₹5,840</strong> / ₹7,000</div></div>
-      <div class="bud-bar-bg"><div class="bud-bar-fill" style="width:83%;background:var(--wad)"></div></div>
-      <div class="bud-row"><div class="bud-cat">💊 Medical <span class="over-tag">⚠ Over budget</span></div><div class="bud-nums"><strong>₹3,120</strong> / ₹3,000</div></div>
-      <div class="bud-bar-bg"><div class="bud-bar-fill" style="width:100%;background:#e74c3c"></div></div>
-      <div class="bud-row"><div class="bud-cat">⛽ Fuel</div><div class="bud-nums"><strong>₹2,100</strong> / ₹3,500</div></div>
-      <div class="bud-bar-bg"><div class="bud-bar-fill" style="width:60%;background:#f39c12"></div></div>
-      <div class="bud-row"><div class="bud-cat">🖥 Electronics</div><div class="bud-nums"><strong>₹2,999</strong> / ₹5,000</div></div>
-      <div class="bud-bar-bg"><div class="bud-bar-fill" style="width:60%;background:#2e7d32"></div></div>
-      <div class="bud-row"><div class="bud-cat">🍽 Dining</div><div class="bud-nums"><strong>₹840</strong> / ₹2,000</div></div>
-      <div class="bud-bar-bg"><div class="bud-bar-fill" style="width:42%;background:#9b59b6"></div></div>
-    </div>
-    <div class="bud-card">
-      <div class="sec-lbl">Budget alerts</div>
-      <div class="insight-it"><div class="ins-ic" style="background:#fce4ec"><i class="ti ti-bell" style="color:#880e4f"></i></div><div class="ins-txt"><h5>Medical budget exceeded ₹120</h5><p>Move ₹200 from dining to cover. Or increase medical budget for this month.</p></div></div>
-      <div class="insight-it"><div class="ins-ic" style="background:#e8f5e9"><i class="ti ti-check" style="color:#2e7d32"></i></div><div class="ins-txt"><h5>Fuel and electronics on track</h5><p>60% budget used with 55% of the month done. Good control on these categories.</p></div></div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ CURRENCY SETTINGS ══ -->
-<div class="view" id="v-curr-settings" style="flex-direction:column">
-  <div class="topbar"><div class="ti-btn" onclick="back()"><i class="ti ti-arrow-left"></i></div><div class="topbar-title">Currency settings</div></div>
-  <div class="cs-body">
-    <div class="cs-profile">
-      <div class="cs-av">P</div>
-      <div class="cs-info"><div class="cs-name">T.B. Praveen</div><div class="cs-upi">praveen@sbi · praveen@hdfc · praveen@icici</div></div>
-      <div class="ti-btn"><i class="ti ti-edit" style="color:#555;font-size:17px"></i></div>
-    </div>
-
-    <div class="cs-sec-title">LINKED BANK ACCOUNTS</div>
-    <div class="linked-bank"><div class="bank-ic" style="background:#1565c0">SBI</div><div class="bank-info"><div class="bank-name">State Bank of India</div><div class="bank-acc">●●●● 4521 · Savings</div></div><div class="bank-bal">₹48,230</div></div>
-    <div class="linked-bank"><div class="bank-ic" style="background:#e74c3c">HDC</div><div class="bank-info"><div class="bank-name">HDFC Bank</div><div class="bank-acc">●●●● 7834 · Savings</div></div><div class="bank-bal">₹1,12,800</div></div>
-    <div class="linked-bank"><div class="bank-ic" style="background:#e67e22">ICI</div><div class="bank-info"><div class="bank-name">ICICI Bank</div><div class="bank-acc">●●●● 9021 · Savings</div></div><div class="bank-bal">₹22,500</div></div>
-    <div class="cs-item" style="background:#fff;border-top:.5px solid #f0f0f0"><i class="ti ti-plus" style="color:var(--wa)"></i><div class="cs-item-text"><div class="cs-item-title" style="color:var(--wa)">Add another bank account</div></div><div class="cs-item-right"><i class="ti ti-chevron-right"></i></div></div>
-
-    <div class="cs-sec-title">UPI & PAYMENT</div>
-    <div class="cs-item"><i class="ti ti-qrcode"></i><div class="cs-item-text"><div class="cs-item-title">My UPI IDs</div><div class="cs-item-sub">praveen@sbi, praveen@hdfc</div></div><div class="cs-item-right"><i class="ti ti-chevron-right"></i></div></div>
-    <div class="cs-item"><i class="ti ti-credit-card"></i><div class="cs-item-text"><div class="cs-item-title">Default payment account</div><div class="cs-item-sub">SBI ●●●● 4521</div></div><div class="cs-item-right"><i class="ti ti-chevron-right"></i></div></div>
-    <div class="cs-item"><i class="ti ti-lock"></i><div class="cs-item-text"><div class="cs-item-title">UPI PIN</div><div class="cs-item-sub">Change or reset UPI PIN</div></div><div class="cs-item-right"><i class="ti ti-chevron-right"></i></div></div>
-
-    <div class="cs-sec-title">RECEIPTS & BILLS</div>
-    <div class="cs-item"><i class="ti ti-file-invoice"></i><div class="cs-item-text"><div class="cs-item-title">Auto-save receipts</div><div class="cs-item-sub">Save digital receipt after every payment</div></div><div class="cs-toggle"></div></div>
-    <div class="cs-item"><i class="ti ti-printer-off"></i><div class="cs-item-text"><div class="cs-item-title">Suppress paper receipts</div><div class="cs-item-sub">Stop printing at PAYCEIPT merchants</div></div><div class="cs-toggle"></div></div>
-    <div class="cs-item"><i class="ti ti-cloud-upload"></i><div class="cs-item-text"><div class="cs-item-title">Cloud backup</div><div class="cs-item-sub">Backup all receipts to Google Drive</div></div><div class="cs-toggle off"></div></div>
-    <div class="cs-item"><i class="ti ti-shield-check"></i><div class="cs-item-text"><div class="cs-item-title">Warranty tracking</div><div class="cs-item-sub">Get alerts before warranties expire</div></div><div class="cs-toggle"></div></div>
-
-    <div class="cs-sec-title">NOTIFICATIONS</div>
-    <div class="cs-item"><i class="ti ti-bell"></i><div class="cs-item-text"><div class="cs-item-title">Payment notifications</div><div class="cs-item-sub">Alert on every UPI transaction</div></div><div class="cs-toggle"></div></div>
-    <div class="cs-item"><i class="ti ti-chart-bar"></i><div class="cs-item-text"><div class="cs-item-title">Weekly spend summary</div><div class="cs-item-sub">Every Monday morning digest</div></div><div class="cs-toggle"></div></div>
-    <div class="cs-item"><i class="ti ti-wallet"></i><div class="cs-item-text"><div class="cs-item-title">Budget alerts</div><div class="cs-item-sub">Notify when 80% of budget is used</div></div><div class="cs-toggle"></div></div>
-    <div class="cs-item"><i class="ti ti-shield-check"></i><div class="cs-item-text"><div class="cs-item-title">Warranty expiry alerts</div><div class="cs-item-sub">30 days before warranty expires</div></div><div class="cs-toggle"></div></div>
-    <div class="cs-item"><i class="ti ti-trending-up"></i><div class="cs-item-text"><div class="cs-item-title">AI spending insights</div><div class="cs-item-sub">Monthly personalised financial tips</div></div><div class="cs-toggle off"></div></div>
-
-    <div class="cs-sec-title">BUDGET & PLANNING</div>
-    <div class="cs-item"><i class="ti ti-target"></i><div class="cs-item-text"><div class="cs-item-title">Monthly budget limit</div><div class="cs-item-sub">Current: ₹20,000/month</div></div><div class="cs-item-right"><i class="ti ti-chevron-right"></i></div></div>
-    <div class="cs-item"><i class="ti ti-category"></i><div class="cs-item-text"><div class="cs-item-title">Category budgets</div><div class="cs-item-sub">Set limits per spending category</div></div><div class="cs-item-right"><i class="ti ti-chevron-right"></i></div></div>
-    <div class="cs-item"><i class="ti ti-pig-money"></i><div class="cs-item-text"><div class="cs-item-title">Savings goal</div><div class="cs-item-sub">Not set — tap to set a goal</div></div><div class="cs-item-right"><i class="ti ti-chevron-right"></i></div></div>
-
-    <div class="cs-sec-title">PRIVACY & SECURITY</div>
-    <div class="cs-item"><i class="ti ti-fingerprint"></i><div class="cs-item-text"><div class="cs-item-title">App lock for Currency tab</div><div class="cs-item-sub">Fingerprint or PIN to open</div></div><div class="cs-toggle"></div></div>
-    <div class="cs-item"><i class="ti ti-eye-off"></i><div class="cs-item-text"><div class="cs-item-title">Hide balance on home</div><div class="cs-item-sub">Tap to reveal balance</div></div><div class="cs-toggle off"></div></div>
-    <div class="cs-item"><i class="ti ti-database-off"></i><div class="cs-item-text"><div class="cs-item-title">Data sharing consent</div><div class="cs-item-sub">Manage what data PAYCEIPT can use</div></div><div class="cs-item-right"><i class="ti ti-chevron-right"></i></div></div>
-    <div style="padding:14px;text-align:center;font-size:10px;color:#aaa">WhatsApp + PAYCEIPT · Currency v2.0<br>Patent Pending — T.B. Praveen, Chennai</div>
-  </div>
-</div>
-
-</div><!-- screen -->
-</div><!-- phone -->
 
 <script>
-const hist=[];
-function go(id){
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
-  const t=document.getElementById(id);
-  if(t){t.classList.add('on');hist.push(id);}
-}
-function back(){
-  hist.pop();
-  const p=hist[hist.length-1]||'v-splash';
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
-  const t=document.getElementById(p);
-  if(t)t.classList.add('on');
-}
-function switchTab(tab){
-  ['chat','calls','status','currency','settings'].forEach(t=>{
-    document.getElementById('mt-'+t).classList.remove('on');
-    document.getElementById('tc-'+t).classList.remove('on');
-  });
-  document.getElementById('mt-'+tab).classList.add('on');
-  document.getElementById('tc-'+tab).classList.add('on');
-  const titles={chat:'WhatsApp',calls:'Calls',status:'Status',currency:'Currency',settings:'Settings'};
-  document.getElementById('main-title').textContent=titles[tab]||'WhatsApp';
-  if(!hist.includes('v-main'))hist.push('v-main');
-}
-function switchCurrency(){switchTab('currency');}
+    let chart1 = null;
+    const CUR = ['s-currency','s-bills','s-spend','s-subs','s-inbox','s-wallet','s-accounts'];
+
+    function show(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        const el = document.getElementById(id);
+        if (el) { el.classList.add('active'); el.scrollTop = 0; }
+        document.getElementById('bnav').classList.toggle('visible', CUR.includes(id));
+    }
+
+    function topTab(btn, id) {
+        document.querySelectorAll('.top-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        show(id);
+        if (id === 's-currency') syncBN('b-home');
+    }
+
+    function bnav(btn, id) {
+        document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        show(id);
+        if (id === 's-spend') setTimeout(() => loadChart('pie'), 80);
+    }
+
+    function go(id, bn) {
+        show(id);
+        if (bn) syncBN(bn);
+        if (id === 's-spend') setTimeout(() => loadChart('pie'), 80);
+    }
+
+    function syncBN(id) {
+        document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+        const el = document.getElementById(id);
+        if (el) el.classList.add('active');
+    }
+
+    function fc(btn) {
+        btn.closest('.filters').querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    function stab(btn, id) {
+        btn.closest('.screen').querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        ['bt-rec','bt-util','bt-food','bt-evt','bt-mov','bt-trv'].forEach(i => {
+            const el = document.getElementById(i);
+            if (el) el.style.display = (i === id) ? 'block' : 'none';
+        });
+    }
+
+    function swChart(btn, type) {
+        document.querySelectorAll('.cbtn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        loadChart(type);
+    }
+
+    function loadChart(type) {
+        const c = document.getElementById('chart1');
+        if (!c) return;
+        if (chart1) { chart1.destroy(); chart1 = null; }
+        const lbl = ['Rent','Grocery','Travel','Food','Fun','Shop','Medical'];
+        const val = [3999,3850,6230,3070,1900,5180,770];
+        const col = ['#075e54','#25d366','#1abc9c','#f39c12','#e74c3c','#9b59b6','#3498db'];
+        const ctx = c.getContext('2d');
+        if (type === 'pie') chart1 = new Chart(ctx,{type:'pie',data:{labels:lbl,datasets:[{data:val,backgroundColor:col,borderColor:'#fff',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10,padding:6}}}}});
+        else if (type === 'bar') chart1 = new Chart(ctx,{type:'bar',data:{labels:lbl,datasets:[{data:val,backgroundColor:col}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:9}}},y:{ticks:{font:{size:10}}}}}});
+        else chart1 = new Chart(ctx,{type:'line',data:{labels:['Week 1','Week 2','Week 3','Week 4'],datasets:[{label:'₹',data:[3200,4100,2950,3900],borderColor:'#25d366',backgroundColor:'rgba(37,211,102,0.1)',tension:0.4,fill:true}]},options:{responsive:true,maintainAspectRatio:false}});
+    }
+
+    function openQR() { document.getElementById('qr-ov').classList.add('open'); }
+    function closeQR() { document.getElementById('qr-ov').classList.remove('open'); }
+
+    // Register service worker
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
 </script>
+</body>
+</html>
