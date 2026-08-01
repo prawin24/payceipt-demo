@@ -26,13 +26,13 @@
 
   /* ── POS TERMINAL ── */
   .pos-unit{background:#1c1c1e; border-radius:22px; padding:14px; box-shadow:0 20px 50px rgba(0,0,0,0.18);}
-  .pos-screen{background:#fff; border-radius:14px; overflow:hidden; min-height:600px; display:flex; flex-direction:column;}
+  .pos-screen{background:#fff; border-radius:14px; overflow:hidden; min-height:640px; display:flex; flex-direction:column;}
   .pos-topbar{background:#1c1c1e; color:#fff; padding:8px 14px; font-size:11px; display:flex; justify-content:space-between; font-family:monospace;}
   .pos-header{background:var(--wa-dark); color:#fff; padding:14px 16px;}
   .pos-header .store{font-size:15px; font-weight:800;}
   .pos-header .label{font-size:11px; opacity:0.85; margin-top:2px;}
 
-  .pos-body{flex:1; padding:16px; display:flex; flex-direction:column;}
+  .pos-body{flex:1; padding:16px; display:flex; flex-direction:column; overflow-y:auto;}
 
   /* business selector cards */
   .biz-card{display:flex; align-items:center; gap:14px; background:#f7f7f7; border:1.5px solid var(--border); border-radius:14px; padding:16px; margin-bottom:12px; cursor:pointer; transition:all 0.15s;}
@@ -43,8 +43,6 @@
   .biz-card .bt .bd{font-size:11.5px; color:var(--sub); margin-top:2px;}
   .biz-card .bc{font-size:18px; color:var(--sub);}
 
-  .cart-item{display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--border); font-size:13px;}
-  .cart-item .qty{color:var(--sub); font-size:11px;}
   .cart-total{display:flex; justify-content:space-between; padding:12px 0 6px; font-weight:800; font-size:16px; color:var(--wa-dark); border-top:2px solid var(--wa-dark); margin-top:6px;}
 
   .pos-btn{background:var(--wa-green); color:#04140d; border:none; border-radius:10px; padding:13px; font-weight:800; font-size:14px; cursor:pointer; margin-top:16px; transition:transform 0.15s;}
@@ -72,13 +70,24 @@
   .catalog-row .cp{font-size:11px; color:var(--sub); margin-top:1px;}
   .catalog-row button{background:var(--wa-green); color:#04140d; border:none; border-radius:8px; padding:6px 11px; font-size:11px; font-weight:800; cursor:pointer; flex-shrink:0; margin-left:8px;}
 
-  .cart-list{max-height:130px; overflow-y:auto; margin-bottom:4px;}
+  .field-row{display:flex; gap:8px; margin-bottom:10px;}
+  .field-col{flex:1; min-width:0;}
+  .field-label{font-size:10px; font-weight:800; color:var(--sub); text-transform:uppercase; letter-spacing:0.3px; margin-bottom:4px;}
+  .field-col select, .field-col input[type="date"], .field-col input[type="text"].search-in{
+    width:100%; border:1.5px solid var(--border); border-radius:8px; padding:8px 9px; font-size:12px; font-family:inherit; background:#fff;
+  }
+  .search-wrap{margin-bottom:10px;}
+  .search-btn-row{display:flex; gap:6px; margin-bottom:14px;}
+  .search-btn-row button{background:var(--wa-dark); color:#fff; border:none; border-radius:8px; padding:9px 16px; font-weight:800; font-size:12.5px; cursor:pointer;}
+  .toggle-custom{background:none; border:none; color:var(--wa-dark); font-size:11.5px; font-weight:700; text-decoration:underline; cursor:pointer; margin-bottom:10px;}
+
+  .cart-list{max-height:120px; overflow-y:auto; margin-bottom:4px;}
   .cart-row{display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid var(--border); font-size:12.5px; animation:rowIn 0.3s ease;}
   @keyframes rowIn{from{opacity:0; transform:translateX(-8px);}to{opacity:1; transform:translateX(0);}}
   .cart-row .cn{flex:1;}
   .cart-row .cp{font-weight:700; margin-right:8px;}
   .cart-row .cx{background:none; border:none; color:#c0392b; font-size:15px; cursor:pointer; padding:2px 6px;}
-  .cart-empty{text-align:center; color:var(--sub); font-size:12px; padding:16px 0;}
+  .cart-empty{text-align:center; color:var(--sub); font-size:12px; padding:14px 0;}
 
   .qr-real-wrap{width:150px; height:150px; margin:0 auto 8px; padding:6px; background:#fff; border-radius:12px; display:flex; align-items:center; justify-content:center;}
   .qr-real-wrap.payment{border:3px solid #1a73e8;}
@@ -95,12 +104,27 @@
 
   .status-line{display:flex; align-items:center; gap:8px; background:#f0f9f4; border:1px solid #c8ecd6; border-radius:10px; padding:10px 12px; margin-top:14px; font-size:12.5px; color:#0d7a3f; font-weight:600; animation:popIn 0.3s ease;}
   .status-line .dot{width:8px;height:8px;border-radius:50%;background:#0d7a3f; flex-shrink:0;}
+  .status-line.waiting{background:#fff8e6; border-color:#f0dca0; color:#8a6600;}
+  .status-line.waiting .dot{background:#e0a800; animation:pulseDot 1.2s ease-in-out infinite;}
+  @keyframes pulseDot{0%,100%{opacity:1;}50%{opacity:0.3;}}
 
   .reset-link{text-align:center; margin-top:auto; padding-top:14px;}
   .reset-link button{background:none; border:none; color:var(--sub); font-size:11.5px; text-decoration:underline; cursor:pointer;}
 
+  /* completion screen */
+  .done-wrap{text-align:center; padding:10px 4px;}
+  .done-check{font-size:52px; color:var(--wa-green); animation:popIn 0.4s ease;}
+  .done-title{font-size:16px; font-weight:800; margin-top:8px;}
+  .done-sub{font-size:12px; color:var(--sub); margin-top:4px;}
+  .eco-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:18px 0;}
+  .eco-box{background:#eefdf3; border:1px solid #c8ecd6; border-radius:10px; padding:12px 6px;}
+  .eco-box .ev{font-size:16px; font-weight:800; color:#0d7a3f;}
+  .eco-box .el{font-size:9px; color:#0d7a3f; margin-top:3px; font-weight:600;}
+  .done-btn-row{display:flex; gap:8px; margin-top:6px;}
+  .done-btn-row button{flex:1;}
+
   /* ── CONNECTOR ── */
-  .connector{display:flex; flex-direction:column; align-items:center; justify-content:center; height:600px; position:relative;}
+  .connector{display:flex; flex-direction:column; align-items:center; justify-content:center; height:640px; position:relative;}
   .connector-arrow{font-size:26px; color:var(--sub); opacity:0.35;}
   .flying-doc{position:absolute; top:50%; left:50%; width:34px; height:44px; background:#fff; border:2px solid var(--wa-green); border-radius:4px; opacity:0; transform:translate(-50%,-50%) scale(0.5); box-shadow:0 6px 16px rgba(0,0,0,0.2);}
   .flying-doc::after{content:'🧾'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:18px;}
@@ -112,12 +136,12 @@
     85%{opacity:1;}
     100%{opacity:0; left:100%; transform:translate(-50%,-50%) scale(0.6) rotate(0deg);}
   }
-  .connector-label{position:absolute; bottom:20px; font-size:10px; color:var(--sub); text-align:center; font-family:monospace; letter-spacing:0.3px; width:120px;}
+  .connector-label{position:absolute; bottom:20px; font-size:10px; color:var(--sub); text-align:center; font-family:monospace; letter-spacing:0.3px; width:130px;}
 
   /* ── CUSTOMER PHONE ── */
   .phone-unit{width:100%; max-width:300px; margin:0 auto; background:#000; border-radius:36px; padding:10px; box-shadow:0 20px 50px rgba(0,0,0,0.18); position:relative;}
   .phone-notch{position:absolute; top:10px; left:50%; transform:translateX(-50%); width:100px; height:20px; background:#000; border-radius:0 0 12px 12px; z-index:10;}
-  .phone-screen{background:#fff; border-radius:26px; overflow:hidden; min-height:600px; display:flex; flex-direction:column; padding-top:20px;}
+  .phone-screen{background:#fff; border-radius:26px; overflow:hidden; min-height:640px; display:flex; flex-direction:column; padding-top:20px;}
 
   .wa-header{background:var(--wa-dark); color:#fff; padding:10px 14px; font-size:15px; font-weight:800;}
   .wa-tabs{background:var(--wa-dark); display:flex; padding:0 8px;}
@@ -194,7 +218,7 @@
       <div class="connector-label" id="connectorLabel">Waiting for sale to complete…</div>
     </div>
 
-    <!-- ═══════ CUSTOMER PHONE ═══════ -->
+    <!-- ═══════ CUSTOMER PHONE (local mock, for at-a-glance preview only) ═══════ -->
     <div class="phone-unit">
       <div class="phone-notch"></div>
       <div class="phone-screen">
@@ -213,7 +237,7 @@
             <div class="amt" id="balAmt">₹24,500</div>
             <div class="lbl" id="balSub">Across all accounts</div>
           </div>
-          <div class="sec-lbl">Recent Bills (this demo tab)</div>
+          <div class="sec-lbl">Recent Bills (mock preview)</div>
           <div id="billList">
             <div class="empty-hint" id="emptyHint">
               <span class="ic">📭</span>
@@ -232,7 +256,7 @@
   </div>
 
   <div class="flow-caption" id="flowCaption"></div>
-  <div class="sync-note">📌 <b>To see the bill in your real PAYCEIPT app:</b> scan the generated QR with a phone that has <code>payceipt-demo</code> open, <i>or</i> tap "Or simulate it right here" while that app is open in another tab of <b>this same browser</b> — it's written to shared storage instantly and will appear on next load (or live, if both tabs support background sync).</div>
+  <div class="sync-note">📌 <b>To confirm payment for real:</b> scan the generated QR with the PAYCEIPT app on another phone — it will ask for the WhatsApp Pay PIN (<b>2504</b> in this demo) before the bill is saved. If both apps are open in tabs of <b>this same browser</b>, this screen updates automatically the moment payment is confirmed. Testing across two separate devices? Use the manual "I've completed payment" button after confirming on the other phone.</div>
 
 <script>
 /* ════════════════════════════════════════════════════════
@@ -2540,6 +2564,7 @@ var qrcode = function() {
 </script>
 <script>
   const APP_URL = 'https://prawin24.github.io/payceipt-demo/';
+  const TODAY = new Date().toISOString().split('T')[0];
 
   const BUSINESSES = {
     store: {
@@ -2554,31 +2579,40 @@ var qrcode = function() {
       ]
     },
     events: {
-      name: 'CineEvents Booking', icon:'🎬', category:'Fun', kind:'catalog', unit:'seat',
+      name: 'CineEvents Booking', icon:'🎬', category:'Fun', kind:'events',
       catalog: [
         { name:'🎬 Pushpa 2 — PVR IMAX', price:300 },
         { name:'🎬 Kalki 2898 AD — INOX', price:280 },
         { name:'🎵 Arijit Singh Live Concert', price:1500 },
         { name:'🏏 IPL Final — Chepauk Stadium', price:2500 },
         { name:'😂 Comedy Night — Zakir Khan', price:600 },
+        { name:'🎭 Broadway Musical — Chennai', price:900 },
       ]
     },
     travel: {
-      name: 'RedRoute Travel', icon:'🚌', category:'Travel', kind:'catalog', unit:'seat',
-      catalog: [
-        { name:'🚌 Chennai → Bengaluru (Volvo AC)', price:850 },
-        { name:'🚌 Chennai → Madurai (Sleeper AC)', price:650 },
-        { name:'✈️ Chennai → Delhi (IndiGo)', price:4200 },
-        { name:'✈️ Chennai → Mumbai (Air India)', price:5100 },
-        { name:'🚄 Chennai → Coimbatore (Shatabdi)', price:450 },
-      ]
+      name: 'RedRoute Travel', icon:'🚌', category:'Travel', kind:'travel',
+      cities: ['Chennai','Bengaluru','Mumbai','Delhi','Coimbatore','Madurai','Hyderabad'],
+      routes: {
+        'Chennai-Bengaluru': [ {mode:'🚌', op:'Volvo Multi-Axle AC', price:850}, {mode:'✈️', op:'IndiGo 6E-123', price:2800}, {mode:'🚄', op:'Shatabdi Express', price:600} ],
+        'Chennai-Delhi': [ {mode:'✈️', op:'IndiGo 6E-204', price:4200}, {mode:'✈️', op:'Air India AI-440', price:5100} ],
+        'Chennai-Mumbai': [ {mode:'✈️', op:'Air India AI-522', price:5100}, {mode:'🚄', op:'Chennai Mumbai Mail', price:1200} ],
+        'Chennai-Madurai': [ {mode:'🚌', op:'Sleeper AC', price:650}, {mode:'🚄', op:'Vaigai Express', price:180} ],
+        'Chennai-Coimbatore': [ {mode:'🚄', op:'Shatabdi Express', price:450}, {mode:'🚌', op:'Non-AC Seater', price:380} ],
+        'Bengaluru-Mumbai': [ {mode:'✈️', op:'Vistara UK-815', price:4600}, {mode:'🚌', op:'Volvo AC Sleeper', price:1400} ],
+        'Bengaluru-Hyderabad': [ {mode:'✈️', op:'IndiGo 6E-611', price:2900}, {mode:'🚌', op:'Volvo AC', price:900} ],
+        'Delhi-Mumbai': [ {mode:'✈️', op:'Vistara UK-995', price:4800} ],
+      }
     }
   };
 
   let business = null;
   let cart = [];
-  let step = 'home'; // 'home' | 'build' | 'pay' | 'qr-upi' | 'qr-cash' | 'done'
+  let step = 'home'; // 'home' | 'build' | 'pay' | 'qr-upi' | 'qr-cash-confirm' | 'qr-cash' | 'done'
   let payMethod = null;
+  let pendingFingerprint = null;
+  let showCustomForm = false;
+  let travelFrom = '', travelTo = '', travelDate = TODAY, travelResults = null;
+  let eventDate = TODAY, eventSearch = '';
 
   const posBody = document.getElementById('posBody');
   const connectorLabel = document.getElementById('connectorLabel');
@@ -2586,18 +2620,30 @@ var qrcode = function() {
   const breadcrumb = document.getElementById('breadcrumb');
 
   const bc = ('BroadcastChannel' in window) ? new BroadcastChannel('payceipt_bills') : null;
+  if (bc) {
+    bc.onmessage = (e) => {
+      if (e.data && e.data.type === 'bill_confirmed' && e.data.bill) {
+        const fp = billFingerprint(e.data.bill);
+        if (fp === pendingFingerprint) {
+          showDoneScreen(e.data.bill, { auto:true });
+        }
+      }
+    };
+  }
+
+  function billFingerprint(bill){ return bill.s + '|' + bill.t + '|' + bill.ts; }
 
   const CAPTIONS = {
-    idle: "Pick a business on the left to see its checkout — a grocery store, a movie/event booking counter, or a bus/flight ticketing counter. All three end the same way: choose WhatsApp Pay or Cash, then a QR carries the bill into PAYCEIPT's Currency tab.",
-    upi: "<b>WhatsApp Pay flow:</b> the QR the customer scans to pay is the only integration point needed. The moment the payment confirms, one webhook fires — no second scan. The bill rides on the payment session that already exists.<br><br><b>Try it for real:</b> scan the QR below with the camera inside the PAYCEIPT app on another phone. The bill lands straight in its Currency tab, under the right category automatically.",
-    cash: "<b>Cash flow:</b> since no payment routes through WhatsApp, the POS generates a second QR after the sale, using WhatsApp's existing 'QR opens a chat with a pre-filled message' mechanism. A webhook replies with the itemised bill.<br><br><b>Try it for real:</b> scan the QR below with the camera inside the PAYCEIPT app on another phone."
+    idle: "Pick a business on the left to see its checkout — a grocery store, a movie/event booking counter, or a bus/flight ticketing counter. All three end the same way: choose WhatsApp Pay or Cash, then a QR carries the bill into PAYCEIPT's Currency tab — where payment must be confirmed with a PIN before it's saved.",
+    upi: "<b>WhatsApp Pay flow:</b> scanning this QR opens PAYCEIPT with the amount ready — it isn't paid yet. The customer taps Pay and enters their WhatsApp Pay PIN (<b>2504</b> in this demo). Only after that succeeds does the bill get saved and this screen shows it as complete.",
+    cash: "<b>Cash flow:</b> money already changed hands at the counter, so scanning this QR just needs a confirm tap (no PIN) to save the digital bill into WhatsApp's Currency tab."
   };
 
   // ── HOME: business selector ──
   function homeHTML(){
     return Object.keys(BUSINESSES).map(key => {
       const b = BUSINESSES[key];
-      const desc = b.kind === 'freeform' ? 'Grocery & retail checkout' : (key === 'events' ? 'Movie & event ticketing' : 'Bus & flight ticketing');
+      const desc = key === 'store' ? 'Grocery & retail checkout' : (key === 'events' ? 'Movie & event ticketing' : 'Bus & flight ticketing');
       return `<div class="biz-card" onclick="selectBusiness('${key}')">
         <div class="bi">${b.icon}</div>
         <div class="bt"><div class="bn">${b.name}</div><div class="bd">${desc}</div></div>
@@ -2611,16 +2657,19 @@ var qrcode = function() {
     cart = [];
     step = 'build';
     payMethod = null;
+    showCustomForm = false;
+    travelFrom = ''; travelTo = ''; travelDate = TODAY; travelResults = null;
+    eventDate = TODAY; eventSearch = '';
     const b = BUSINESSES[key];
     document.getElementById('posStoreLabel').textContent = b.icon + ' ' + b.name;
-    document.getElementById('posModeLabel').textContent = b.kind === 'freeform' ? 'Grocery Checkout' : (key==='events' ? 'Ticket Booking' : 'Travel Booking');
+    document.getElementById('posModeLabel').textContent = key==='store' ? 'Grocery Checkout' : (key==='events' ? 'Ticket Booking' : 'Travel Booking');
     updateBreadcrumb();
     flowCaption.innerHTML = CAPTIONS.idle;
     render();
   }
 
   function goHome(){
-    business = null; cart = []; step = 'home'; payMethod = null;
+    business = null; cart = []; step = 'home'; payMethod = null; pendingFingerprint = null;
     document.getElementById('posStoreLabel').textContent = '🧾 Select a Business';
     document.getElementById('posModeLabel').textContent = "Choose where you're checking out";
     updateBreadcrumb();
@@ -2632,7 +2681,7 @@ var qrcode = function() {
   function updateBreadcrumb(){
     if (!business){ breadcrumb.innerHTML = '<span>Choose a business to simulate its checkout →</span>'; return; }
     const b = BUSINESSES[business];
-    breadcrumb.innerHTML = `<button onclick="goHome()">← All businesses</button><span>Now at: <b>${b.icon} ${b.name}</b></span>`;
+    breadcrumb.innerHTML = `<button onclick="goHome()">🏠 All businesses</button><span>Now at: <b>${b.icon} ${b.name}</b></span>`;
   }
 
   function resetPhone(){
@@ -2661,7 +2710,6 @@ var qrcode = function() {
     cart.push({ name, price, qty:1 });
     nameInput.value = ''; priceInput.value = '';
     render();
-    nameInput.focus();
   }
 
   function removeItem(idx){
@@ -2669,39 +2717,156 @@ var qrcode = function() {
     render();
   }
 
-  function buildHTML(){
-    const b = BUSINESSES[business];
-    let picker;
-    if (b.kind === 'freeform'){
-      const chips = b.presets.map(p => `<button class="preset-chip" onclick="addItem('${p.name.replace(/'/g,"\\'")}', ${p.price})">+ ${p.name} · ₹${p.price}</button>`).join('');
-      picker = `
-        <div style="font-size:11px;font-weight:800;color:var(--sub);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px;">Quick add</div>
-        <div class="preset-row">${chips}</div>
-        <div style="font-size:11px;font-weight:800;color:var(--sub);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px;">Or add a custom item</div>
-        <div class="add-item-form">
-          <input id="itemNameInput" class="name-in" type="text" placeholder="Item name" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('itemPriceInput').focus();}">
-          <input id="itemPriceInput" class="price-in" type="number" placeholder="₹ Price" onkeydown="if(event.key==='Enter'){event.preventDefault();addCustomItem();}">
-          <button onclick="addCustomItem()">+</button>
-        </div>`;
-    } else {
-      const rows = b.catalog.map(c => `<div class="catalog-row"><div><div class="cn">${c.name}</div><div class="cp">₹${c.price} / ${b.unit}</div></div><button onclick="addItem('${c.name.replace(/'/g,"\\'")}', ${c.price})">+ Add</button></div>`).join('');
-      picker = `
-        <div style="font-size:11px;font-weight:800;color:var(--sub);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">${business==='events' ? 'Select tickets' : 'Select route & class'}</div>
-        ${rows}`;
-    }
+  function toggleCustomForm(){
+    showCustomForm = !showCustomForm;
+    render();
+  }
 
-    const cartRows = cart.length
+  function cartListHTML(label){
+    const rows = cart.length
       ? cart.map((i,idx) => `<div class="cart-row"><span class="cn">${i.name}${i.qty>1 ? ' ×'+i.qty : ''}</span><span class="cp">₹${i.price*i.qty}</span><button class="cx" onclick="removeItem(${idx})">✕</button></div>`).join('')
       : '<div class="cart-empty">Nothing added yet</div>';
-
     return `
-      ${picker}
-      <div style="font-size:11px;font-weight:800;color:var(--sub);text-transform:uppercase;letter-spacing:0.4px;margin:12px 0 4px;">${business==='store' ? 'Current bill' : 'Your booking'}</div>
-      <div class="cart-list">${cartRows}</div>
+      <div style="font-size:11px;font-weight:800;color:var(--sub);text-transform:uppercase;letter-spacing:0.4px;margin:12px 0 4px;">${label}</div>
+      <div class="cart-list">${rows}</div>
       <div class="cart-total"><span>Total</span><span>₹${cartTotal()}</span></div>
       <button class="pos-btn" ${cart.length===0 ? 'disabled' : ''} onclick="proceedToPayment()">✅ ${business==='store' ? 'Complete Sale' : 'Proceed to Payment'}</button>
       <div class="reset-link"><button onclick="selectBusiness(business)">↺ Reset this order</button></div>
     `;
+  }
+
+  // ── business-specific builders ──
+  function storeBuildHTML(){
+    const b = BUSINESSES.store;
+    const chips = b.presets.map(p => `<button class="preset-chip" onclick="addItem('${p.name.replace(/'/g,"\\'")}', ${p.price})">+ ${p.name} · ₹${p.price}</button>`).join('');
+    return `
+      <div style="font-size:11px;font-weight:800;color:var(--sub);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px;">Quick add</div>
+      <div class="preset-row">${chips}</div>
+      <div style="font-size:11px;font-weight:800;color:var(--sub);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px;">Or add a custom item</div>
+      <div class="add-item-form">
+        <input id="itemNameInput" class="name-in" type="text" placeholder="Item name" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('itemPriceInput').focus();}">
+        <input id="itemPriceInput" class="price-in" type="number" placeholder="₹ Price" onkeydown="if(event.key==='Enter'){event.preventDefault();addCustomItem();}">
+        <button onclick="addCustomItem()">+</button>
+      </div>
+      ${cartListHTML('Current bill')}
+    `;
+  }
+
+  function eventsBuildHTML(){
+    const b = BUSINESSES.events;
+    const dateFmt = new Date(eventDate).toLocaleDateString('en-IN', { day:'2-digit', month:'short' });
+    const filtered = b.catalog.filter(c => c.name.toLowerCase().includes(eventSearch.toLowerCase()));
+    const rows = filtered.length ? filtered.map(c => {
+      const fullName = `${c.name} (${dateFmt})`;
+      return `<div class="catalog-row"><div><div class="cn">${c.name}</div><div class="cp">₹${c.price}/seat · ${dateFmt}</div></div><button onclick="addItem('${fullName.replace(/'/g,"\\'")}', ${c.price})">+ Add</button></div>`;
+    }).join('') : '<div class="cart-empty">No matches — try a different search, or add it as a custom event below</div>';
+
+    return `
+      <div class="field-row">
+        <div class="field-col">
+          <div class="field-label">Show / Event Date</div>
+          <input type="date" value="${eventDate}" onchange="eventDate=this.value; render();">
+        </div>
+      </div>
+      <div class="search-wrap">
+        <div class="field-label">Search movies &amp; events</div>
+        <input type="text" class="search-in" placeholder="Search by name…" value="${eventSearch}" oninput="eventSearch=this.value; render();">
+      </div>
+      ${rows}
+      <button class="toggle-custom" onclick="toggleCustomForm()">${showCustomForm ? '− Hide' : '+ Add a custom movie/event'}</button>
+      ${showCustomForm ? `
+        <div class="add-item-form">
+          <input id="itemNameInput" class="name-in" type="text" placeholder="Movie/event name">
+          <input id="itemPriceInput" class="price-in" type="number" placeholder="₹ Price">
+          <button onclick="addCustomEventItem()">+</button>
+        </div>` : ''}
+      ${cartListHTML('Your booking')}
+    `;
+  }
+
+  function addCustomEventItem(){
+    const nameInput = document.getElementById('itemNameInput');
+    const priceInput = document.getElementById('itemPriceInput');
+    const name = nameInput.value.trim();
+    const price = parseFloat(priceInput.value);
+    if (!name || !price || price <= 0) return;
+    const dateFmt = new Date(eventDate).toLocaleDateString('en-IN', { day:'2-digit', month:'short' });
+    cart.push({ name: `🎟️ ${name} (${dateFmt})`, price, qty:1 });
+    render();
+  }
+
+  function hashCode(str){
+    let h = 0;
+    for (let i=0;i<str.length;i++){ h = (h*31 + str.charCodeAt(i)) | 0; }
+    return h;
+  }
+
+  function travelBuildHTML(){
+    const b = BUSINESSES.travel;
+    const cityOpts = (sel) => b.cities.map(c => `<option value="${c}" ${c===sel?'selected':''}>${c}</option>`).join('');
+    const dateFmt = travelDate ? new Date(travelDate).toLocaleDateString('en-IN', { day:'2-digit', month:'short' }) : '';
+
+    let resultsHtml = '';
+    if (travelResults){
+      resultsHtml = travelResults.length ? travelResults.map(r => {
+        const fullName = `${r.mode} ${travelFrom} → ${travelTo} (${r.op}) · ${dateFmt}`;
+        return `<div class="catalog-row"><div><div class="cn">${r.mode} ${travelFrom} → ${travelTo}</div><div class="cp">${r.op} · ₹${r.price}/seat · ${dateFmt}</div></div><button onclick="addItem('${fullName.replace(/'/g,"\\'")}', ${r.price})">+ Add</button></div>`;
+      }).join('') : '<div class="cart-empty">No routes found</div>';
+    }
+
+    return `
+      <div class="field-row">
+        <div class="field-col">
+          <div class="field-label">From</div>
+          <select onchange="travelFrom=this.value; travelResults=null; render();">
+            <option value="">Select city</option>
+            ${cityOpts(travelFrom)}
+          </select>
+        </div>
+        <div class="field-col">
+          <div class="field-label">To</div>
+          <select onchange="travelTo=this.value; travelResults=null; render();">
+            <option value="">Select city</option>
+            ${cityOpts(travelTo)}
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-col">
+          <div class="field-label">Travel Date</div>
+          <input type="date" value="${travelDate}" onchange="travelDate=this.value; render();">
+        </div>
+      </div>
+      <div class="search-btn-row">
+        <button ${(!travelFrom||!travelTo||travelFrom===travelTo) ? 'disabled style="opacity:0.4;"' : ''} onclick="searchRoutes()">🔍 Search Routes</button>
+      </div>
+      ${resultsHtml}
+      ${cartListHTML('Your booking')}
+    `;
+  }
+
+  function searchRoutes(){
+    if (!travelFrom || !travelTo || travelFrom === travelTo) return;
+    const b = BUSINESSES.travel;
+    const key = travelFrom + '-' + travelTo;
+    const revKey = travelTo + '-' + travelFrom;
+    let routes = b.routes[key] || b.routes[revKey];
+    if (!routes){
+      const h = Math.abs(hashCode(key));
+      routes = [
+        { mode:'🚌', op:'AC Sleeper Coach', price: 500 + (h % 600) },
+        { mode:'✈️', op:'Economy Flight',   price: 2800 + (h % 3000) },
+      ];
+    }
+    travelResults = routes;
+    render();
+  }
+
+  function buildHTML(){
+    if (business === 'store') return storeBuildHTML();
+    if (business === 'events') return eventsBuildHTML();
+    if (business === 'travel') return travelBuildHTML();
+    return '';
   }
 
   function proceedToPayment(){
@@ -2748,8 +2913,9 @@ var qrcode = function() {
 
   function buildBillURL(method){
     const payload = buildBillPayload(method);
+    pendingFingerprint = billFingerprint(payload);
     const encoded = encodeURIComponent(b64EncodeUnicode(JSON.stringify(payload)));
-    return APP_URL + '?bill=' + encoded;
+    return { url: APP_URL + '?bill=' + encoded, payload };
   }
 
   function renderRealQR(containerId, url){
@@ -2767,7 +2933,7 @@ var qrcode = function() {
 
   // ── QR screens ──
   function qrUpiHTML(){
-    const url = buildBillURL('UPI');
+    const { url } = buildBillURL('UPI');
     setTimeout(()=> renderRealQR('qrRealPayment', url), 0);
     connectorLabel.textContent = 'Payment QR live — scan with a real phone';
     flowCaption.innerHTML = CAPTIONS.upi;
@@ -2778,22 +2944,11 @@ var qrcode = function() {
         <div class="qr-badge payment" style="display:inline-block;">WHATSAPP PAY</div>
         <div class="qr-caption">Scan to Pay ₹${cartTotal()}</div>
         <div class="qr-sub">Scan with the PAYCEIPT app's camera on another phone</div>
-        <button class="pos-btn secondary" style="margin-top:14px;" onclick="simulateDigitalPay()">▶ Or simulate it right here</button>
+        <div class="status-line waiting"><span class="dot"></span>Waiting for payment confirmation…</div>
+        <button class="pos-btn secondary" style="margin-top:10px;" onclick="manualConfirm()">✅ I've completed payment on my phone</button>
       </div>
       <div class="reset-link" style="margin-top:auto;"><button onclick="selectBusiness(business)">↺ Reset this order</button></div>
     `;
-  }
-
-  function simulateDigitalPay(){
-    const total = cartTotal();
-    document.getElementById('qrArea2').innerHTML = `
-      <div class="status-line"><span class="dot"></span>Payment received via WhatsApp Pay — ₹${total}</div>
-      <div class="status-line" style="margin-top:8px;"><span class="dot"></span>Bill sent automatically. No extra scan needed.</div>
-      <button class="pos-btn" style="margin-top:16px;" onclick="selectBusiness(business)">🆕 New Order</button>
-      <div class="reset-link"><button onclick="goHome()">🏠 Back to businesses</button></div>
-    `;
-    connectorLabel.textContent = 'Webhook fired → bill pushed to existing chat session';
-    finalizeBill('UPI');
   }
 
   function qrCashConfirmHTML(){
@@ -2810,7 +2965,7 @@ var qrcode = function() {
   }
 
   function qrCashHTML(){
-    const url = buildBillURL('Cash');
+    const { url } = buildBillURL('Cash');
     setTimeout(()=> renderRealQR('qrRealBill', url), 0);
     connectorLabel.textContent = 'Bill QR live — scan with a real phone';
     flowCaption.innerHTML = CAPTIONS.cash;
@@ -2821,48 +2976,46 @@ var qrcode = function() {
         <div class="qr-badge bill" style="display:inline-block;">SCAN FOR DIGITAL BILL</div>
         <div class="qr-caption">Open the PAYCEIPT app &amp; scan</div>
         <div class="qr-sub">Scan with the PAYCEIPT app's camera on another phone</div>
-        <button class="pos-btn secondary" style="margin-top:14px;" onclick="simulateCashScan()">▶ Or simulate it right here</button>
+        <div class="status-line waiting"><span class="dot"></span>Waiting for bill to be saved…</div>
+        <button class="pos-btn secondary" style="margin-top:10px;" onclick="manualConfirm()">✅ I've saved it on my phone</button>
       </div>
-      <div id="qrArea2"></div>
       <div class="reset-link" style="margin-top:auto;"><button onclick="selectBusiness(business)">↺ Reset this order</button></div>
     `;
   }
 
-  function simulateCashScan(){
-    const overlay = document.getElementById('scanOverlay');
-    overlay.classList.add('show');
-    const b = BUSINESSES[business];
-    document.getElementById('scanTxt').textContent = "Opening chat with " + b.name + "…";
-    setTimeout(()=>{ document.getElementById('scanTxt').textContent = 'Fetching your bill…'; }, 900);
-    setTimeout(()=>{
-      overlay.classList.remove('show');
-      document.getElementById('qrArea2').innerHTML = `
-        <div class="status-line"><span class="dot"></span>Customer scanned — chat session started</div>
-        <div class="status-line" style="margin-top:8px;"><span class="dot"></span>Bill delivered to WhatsApp Currency tab</div>
-        <button class="pos-btn" style="margin-top:16px;" onclick="selectBusiness(business)">🆕 New Order</button>
-        <div class="reset-link"><button onclick="goHome()">🏠 Back to businesses</button></div>
-      `;
-      connectorLabel.textContent = 'WhatsApp chat opened → webhook replies with itemised bill';
-      finalizeBill('Cash');
-    }, 1900);
+  function manualConfirm(){
+    const bill = buildBillPayload(payMethod);
+    bill.ts = parseInt(pendingFingerprint.split('|')[2], 10) || bill.ts;
+    showDoneScreen(bill, { auto:false });
   }
 
-  // ── shared finalize: local mock phone + write to shared storage + broadcast ──
-  function finalizeBill(method){
-    const bill = buildBillPayload(method);
+  // ── DONE screen (shown once payment/bill-save is confirmed, real or manual) ──
+  function showDoneScreen(bill, opts){
+    step = 'done';
     flyDocument();
-    setTimeout(()=> deliverBillLocal(bill), 600);
+    setTimeout(()=> deliverBillLocal(bill), opts.auto ? 0 : 500);
 
-    // write to the SAME localStorage key the real app reads, so opening/reloading
-    // index.html in this same browser shows it even without a camera scan
-    try {
-      const saved = JSON.parse(localStorage.getItem('payceipt_bills') || '[]');
-      saved.unshift(bill);
-      localStorage.setItem('payceipt_bills', JSON.stringify(saved.slice(0,50)));
-    } catch(e) {}
+    const paperG = (2.2 + Math.random()*0.8).toFixed(1);
+    const co2G = (4.5 + Math.random()*1.5).toFixed(1);
+    const treesN = (0.00015 + Math.random()*0.00008).toFixed(5);
 
-    // live-push to any open index.html tab in this same browser
-    if (bc) { try { bc.postMessage({ type:'new_bill', bill }); } catch(e){} }
+    posBody.innerHTML = `
+      <div class="done-wrap">
+        <div class="done-check">✅</div>
+        <div class="done-title">Payment completed &amp; digital bill saved</div>
+        <div class="done-sub">₹${bill.t.toLocaleString('en-IN')} · ${bill.s}${opts.auto ? ' · confirmed automatically' : ''}</div>
+        <div class="eco-grid">
+          <div class="eco-box"><div class="ev">${paperG}g</div><div class="el">📄 PAPER SAVED</div></div>
+          <div class="eco-box"><div class="ev">${co2G}g</div><div class="el">🌫️ CO₂ AVOIDED</div></div>
+          <div class="eco-box"><div class="ev">${treesN}</div><div class="el">🌳 TREES SAVED</div></div>
+        </div>
+        <div class="done-btn-row">
+          <button class="pos-btn secondary" onclick="selectBusiness(business)">🆕 New Order</button>
+          <button class="pos-btn" onclick="goHome()">🏠 Home</button>
+        </div>
+      </div>
+    `;
+    connectorLabel.textContent = 'Confirmed → bill saved in Currency tab';
   }
 
   function flyDocument(){
@@ -2898,7 +3051,7 @@ var qrcode = function() {
     balSub.textContent = bill.m === 'UPI' ? 'Updated just now' : 'Digital receipt saved';
     balCard.classList.remove('pulse'); void balCard.offsetWidth; balCard.classList.add('pulse');
 
-    showToast(`🔔 New receipt — ₹${bill.t} · saved for your real app too`);
+    showToast(`🔔 ₹${bill.t} saved to your real PAYCEIPT app too`);
   }
 
   function showToast(msg){
@@ -2915,6 +3068,7 @@ var qrcode = function() {
     else if (step === 'qr-upi') posBody.innerHTML = qrUpiHTML();
     else if (step === 'qr-cash-confirm') posBody.innerHTML = qrCashConfirmHTML();
     else if (step === 'qr-cash') posBody.innerHTML = qrCashHTML();
+    // 'done' is rendered directly by showDoneScreen()
   }
 
   function tickClock(){
