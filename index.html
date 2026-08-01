@@ -9,6 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <title>PAYCEIPT</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.js"></script>
     <style>
         :root {
             --wa-dark: #075e54;
@@ -649,9 +650,20 @@
     <!-- QR SCANNER -->
     <div class="qr-overlay" id="qr-ov">
         <div style="color:#fff;font-size:14px;font-weight:600;letter-spacing:0.5px">PAYCEIPT · QR Scanner</div>
-        <div class="qr-frame"><div class="qr-corner tl"></div><div class="qr-corner tr"></div><div class="qr-corner bl"></div><div class="qr-corner br"></div><div class="qr-line"></div></div>
-        <div class="qr-text">Point camera at merchant QR code</div>
-        <div class="qr-note">Payment auto-processes · Digital bill sent instantly to your WhatsApp</div>
+        <div class="qr-frame">
+            <video id="qrVideo" playsinline muted style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;"></video>
+            <canvas id="qrCanvas" style="display:none;"></canvas>
+            <div class="qr-corner tl"></div><div class="qr-corner tr"></div><div class="qr-corner bl"></div><div class="qr-corner br"></div><div class="qr-line"></div>
+        </div>
+        <div class="qr-text" id="qrStatusText">Point camera at a PAYCEIPT bill QR</div>
+        <div class="qr-note">Ask the merchant's POS terminal to show the QR, then point your camera at it</div>
+        <div style="width:100%;max-width:260px;margin-top:6px;">
+            <div style="font-size:10px;color:rgba(255,255,255,0.45);text-align:center;margin-bottom:6px;">No camera? Paste the bill link instead:</div>
+            <div style="display:flex;gap:6px;">
+                <input id="qrManualInput" type="text" placeholder="https://…/?bill=…" style="flex:1;min-width:0;padding:8px 10px;border-radius:8px;border:none;font-size:11px;">
+                <button onclick="submitManualLink()" style="background:#25d366;color:#04140d;border:none;border-radius:8px;padding:8px 12px;font-weight:700;font-size:11px;cursor:pointer;">Go</button>
+            </div>
+        </div>
         <button class="qr-close-btn" onclick="closeQR()">✕ Close Scanner</button>
     </div>
 
@@ -663,6 +675,7 @@
         <button class="bnav-btn" id="b-subs" onclick="bnav(this,'s-subs')"><div class="bi">🔄</div><div>Subs</div></button>
         <button class="bnav-btn" id="b-set" onclick="bnav(this,'s-accounts')"><div class="bi">⚙️</div><div>Settings</div></button>
     </div>
+    <div id="billToast" style="position:absolute;left:50%;top:70px;transform:translateX(-50%) translateY(-14px);background:#111;color:#fff;padding:10px 18px;border-radius:20px;font-size:12.5px;font-weight:600;opacity:0;transition:all 0.35s;z-index:250;white-space:nowrap;box-shadow:0 8px 20px rgba(0,0,0,0.3);pointer-events:none;">🔔 New bill received</div>
 </div>
 </div><!-- end .device -->
 
@@ -736,11 +749,186 @@
         else chart1 = new Chart(ctx,{type:'line',data:{labels:['Week 1','Week 2','Week 3','Week 4'],datasets:[{label:'₹',data:[3200,4100,2950,3900],borderColor:'#25d366',backgroundColor:'rgba(37,211,102,0.1)',tension:0.4,fill:true}]},options:{responsive:true,maintainAspectRatio:false}});
     }
 
-    function openQR() { document.getElementById('qr-ov').classList.add('open'); }
-    function closeQR() { document.getElementById('qr-ov').classList.remove('open'); }
+    // ═══════════════════════════════════════════
+    // REAL QR CAMERA SCANNING (jsQR)
+    // ═══════════════════════════════════════════
+    let qrStream = null;
+    let qrScanning = false;
+
+    async function openQR() {
+        document.getElementById('qr-ov').classList.add('open');
+        document.getElementById('qrStatusText').textContent = 'Requesting camera access…';
+        try {
+            qrStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            const video = document.getElementById('qrVideo');
+            video.srcObject = qrStream;
+            await video.play();
+            document.getElementById('qrStatusText').textContent = 'Point camera at a PAYCEIPT bill QR';
+            qrScanning = true;
+            requestAnimationFrame(scanFrame);
+        } catch (err) {
+            document.getElementById('qrStatusText').textContent = 'Camera unavailable — paste the bill link below instead';
+        }
+    }
+
+    function closeQR() {
+        qrScanning = false;
+        document.getElementById('qr-ov').classList.remove('open');
+        if (qrStream) { qrStream.getTracks().forEach(t => t.stop()); qrStream = null; }
+    }
+
+    function scanFrame() {
+        if (!qrScanning) return;
+        const video = document.getElementById('qrVideo');
+        const canvas = document.getElementById('qrCanvas');
+        if (video.readyState === video.HAVE_ENOUGH_DATA && typeof jsQR !== 'undefined') {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imgData.data, imgData.width, imgData.height);
+            if (code && code.data) {
+                handleScannedText(code.data);
+                return;
+            }
+        }
+        requestAnimationFrame(scanFrame);
+    }
+
+    function submitManualLink() {
+        const val = document.getElementById('qrManualInput').value.trim();
+        if (val) handleScannedText(val);
+    }
+
+    function handleScannedText(text) {
+        let url;
+        try { url = new URL(text); } catch (e) { url = null; }
+        if (!url || url.origin !== window.location.origin) {
+            document.getElementById('qrStatusText').textContent = 'That QR isn\u2019t a PAYCEIPT bill — try again';
+            if (qrScanning) requestAnimationFrame(scanFrame);
+            return;
+        }
+        const billParam = url.searchParams.get('bill');
+        if (!billParam) {
+            document.getElementById('qrStatusText').textContent = 'No bill data found in that QR';
+            if (qrScanning) requestAnimationFrame(scanFrame);
+            return;
+        }
+        closeQR();
+        const bill = decodeBillParam(billParam);
+        if (bill) {
+            injectBill(bill);
+            saveBillToStorage(bill);
+        }
+    }
+
+    // ═══════════════════════════════════════════
+    // BILL DECODE / INJECT / PERSIST
+    // ═══════════════════════════════════════════
+    function b64DecodeUnicode(str) {
+        return decodeURIComponent(atob(str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+    }
+
+    function decodeBillParam(param) {
+        try {
+            const json = b64DecodeUnicode(decodeURIComponent(param));
+            return JSON.parse(json);
+        } catch (e) {
+            console.warn('Could not decode bill', e);
+            return null;
+        }
+    }
+
+    function formatBillTime(ts) {
+        const d = new Date(ts);
+        return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) + ' · ' +
+               d.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' });
+    }
+
+    function injectBill(bill, opts) {
+        opts = opts || {};
+        const list = document.getElementById('bt-rec');
+        if (!list) return;
+
+        const row = document.createElement('div');
+        row.className = 'lrow';
+        if (!opts.silent) row.style.animation = 'billArrive 0.5s ease';
+        const methodLabel = bill.m === 'UPI' ? 'WhatsApp Pay' : 'Cash · Digital bill';
+        row.innerHTML = `<div class="lr-left"><div class="lr-name">🏪 ${bill.s}</div><div class="lr-sub">${formatBillTime(bill.ts)} · ${methodLabel}</div></div><div class="lr-amt">₹${bill.t.toLocaleString('en-IN')}</div>`;
+        list.prepend(row);
+
+        if (!opts.silent) {
+            // bump home balance + eco stats
+            const balAmt = document.querySelector('#s-currency .bal-amount');
+            if (balAmt && bill.m === 'UPI') {
+                const current = parseInt(balAmt.textContent.replace(/[₹,]/g, ''), 10) || 0;
+                balAmt.textContent = '₹' + Math.max(current - bill.t, 0).toLocaleString('en-IN');
+            }
+            const paperEl = document.querySelector('#s-currency .bm-val');
+            if (paperEl) paperEl.textContent = ((parseFloat(paperEl.textContent) || 0) + 0.1).toFixed(1) + 'kg';
+
+            showBillToast(`🔔 New bill from ${bill.s} — ₹${bill.t.toLocaleString('en-IN')}`);
+
+            // if user is looking at a different screen, nudge them toward Bills
+            if (!document.getElementById('s-bills').classList.contains('active')) {
+                const billsNav = document.getElementById('b-bills');
+                if (billsNav) billsNav.style.animation = 'navPulse 1.2s ease 2';
+            }
+        }
+    }
+
+    function showBillToast(msg) {
+        const t = document.getElementById('billToast');
+        t.textContent = msg;
+        t.style.opacity = '1';
+        t.style.transform = 'translateX(-50%) translateY(0)';
+        setTimeout(() => {
+            t.style.opacity = '0';
+            t.style.transform = 'translateX(-50%) translateY(-14px)';
+        }, 3200);
+    }
+
+    function saveBillToStorage(bill) {
+        try {
+            const saved = JSON.parse(localStorage.getItem('payceipt_bills') || '[]');
+            saved.unshift(bill);
+            localStorage.setItem('payceipt_bills', JSON.stringify(saved.slice(0, 50)));
+        } catch (e) { /* storage unavailable, skip */ }
+    }
+
+    function restoreSavedBills() {
+        try {
+            const saved = JSON.parse(localStorage.getItem('payceipt_bills') || '[]');
+            saved.slice().reverse().forEach(bill => injectBill(bill, { silent: true }));
+        } catch (e) { /* nothing to restore */ }
+    }
+
+    function processIncomingURL() {
+        const params = new URLSearchParams(window.location.search);
+        const billParam = params.get('bill');
+        if (billParam) {
+            const bill = decodeBillParam(billParam);
+            if (bill) {
+                injectBill(bill);
+                saveBillToStorage(bill);
+            }
+            const cleanUrl = window.location.origin + window.location.pathname;
+            history.replaceState({}, document.title, cleanUrl);
+        }
+    }
 
     // Register service worker
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+
+    // Boot: restore any bills saved from earlier scans, then handle a fresh scan if we arrived via QR
+    restoreSavedBills();
+    processIncomingURL();
 </script>
+<style>
+  @keyframes billArrive { from{opacity:0; transform:translateY(-12px);} to{opacity:1; transform:translateY(0);} }
+  @keyframes navPulse { 0%,100%{color:#999;} 50%{color:#25d366;} }
+</style>
+
 </body>
 </html>
