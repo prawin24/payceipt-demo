@@ -23,6 +23,37 @@
             --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
 
+        body[data-theme="dark"] { --wa-bg:#0b141a; --wa-gray:#111b21; --wa-border:#2a3942; --wa-text:#e9edef; --wa-sub:#8696a0; }
+        body[data-theme="dark"] .screen { background: var(--wa-bg); color: var(--wa-text); }
+        body[data-theme="dark"] .app { background: var(--wa-bg); }
+        body[data-theme="dark"] .content { background: var(--wa-bg); }
+        body[data-theme="dark"] .lrow, body[data-theme="dark"] .tl, body[data-theme="dark"] .chat-row,
+        body[data-theme="dark"] .call-row, body[data-theme="dark"] .status-row, body[data-theme="dark"] .sub-row {
+            background: var(--wa-bg); border-bottom-color: var(--wa-border); color: var(--wa-text);
+        }
+        body[data-theme="dark"] .lr-name, body[data-theme="dark"] .tl-name, body[data-theme="dark"] .chat-name { color: var(--wa-text); }
+        body[data-theme="dark"] .lr-sub, body[data-theme="dark"] .tl-sub, body[data-theme="dark"] .chat-msg { color: var(--wa-sub); }
+        body[data-theme="dark"] .sec-label { background: var(--wa-gray); color: var(--wa-sub); }
+        body[data-theme="dark"] .filters { background: var(--wa-gray); border-bottom-color: var(--wa-border); }
+        body[data-theme="dark"] .chip { background: var(--wa-gray); border-color: var(--wa-border); color: var(--wa-sub); }
+        body[data-theme="dark"] .empty-hint { color: var(--wa-sub); }
+        body[data-theme="dark"] .sub-tabs { background: var(--wa-bg); border-bottom-color: var(--wa-border); }
+        body[data-theme="dark"] .stab { color: var(--wa-sub); }
+        body[data-theme="dark"] .pass-card { background: linear-gradient(135deg, #16211a, #0f1a13); border-color: #234431; }
+        body[data-theme="dark"] .pass-card .pc-title { color: var(--wa-text); }
+        body[data-theme="dark"] .wcard { background: var(--wa-gray); }
+        body[data-theme="dark"] .wcard-lbl { color: var(--wa-text); }
+        body[data-theme="dark"] .bnav-btn { color: var(--wa-sub); }
+        body[data-theme="dark"] .bnav-btn.active { color: var(--wa-green); }
+        body[data-theme="dark"] .bottom-nav { background: var(--wa-bg); border-top-color: var(--wa-border); }
+        body[data-theme="dark"] .acc-add { background: var(--wa-gray); }
+        body[data-theme="dark"] .empty-state { color: var(--wa-sub); }
+
+        .switch { width:42px; height:24px; border-radius:12px; background:#ccc; position:relative; transition:background 0.2s; flex-shrink:0; }
+        .switch.on { background: var(--wa-green); }
+        .switch-knob { width:18px; height:18px; border-radius:50%; background:#fff; position:absolute; top:3px; left:3px; transition:left 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.3); }
+        .switch.on .switch-knob { left:21px; }
+
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         html, body {
@@ -554,6 +585,9 @@
         <!-- ═══ BILLS ═══ -->
         <div class="screen currency-child" id="s-bills">
             <div class="screen-hdr"><button class="back-btn" onclick="go('s-currency','b-home')">←</button><h2>Bills & Receipts</h2></div>
+            <div style="padding:10px 16px 0;">
+                <input type="text" placeholder="🔍 Search bills by store name…" oninput="filterBillsSearch(this.value)" style="width:100%;border:1.5px solid var(--wa-border);border-radius:20px;padding:9px 14px;font-size:12.5px;font-family:inherit;">
+            </div>
             <div class="filters"><button class="chip active" onclick="fc(this)">All</button><button class="chip" onclick="fc(this)">Today</button><button class="chip" onclick="fc(this)">This Week</button><button class="chip" onclick="fc(this)">This Month</button><button class="chip" onclick="fc(this)">3 Months</button></div>
             <div class="sub-tabs">
                 <button class="stab active" onclick="stab(this,'bt-rec')">Receipts</button>
@@ -611,6 +645,7 @@
             <div class="screen-hdr"><button class="back-btn" onclick="go('s-currency','b-home')">←</button><h2>Spending Analytics</h2></div>
             <div class="filters"><button class="chip active" onclick="fc(this)">This Month</button><button class="chip" onclick="fc(this)">Last Month</button><button class="chip" onclick="fc(this)">3 Months</button><button class="chip" onclick="fc(this)">6 Months</button><button class="chip" onclick="fc(this)">This Year</button></div>
             <div class="sp-sum"><div class="ss"><div class="ss-v" id="spTotalSpent">₹13,150</div><div class="ss-l">Total Spent</div></div><div class="ss"><div class="ss-v" id="spTxnCount">47</div><div class="ss-l">Transactions</div></div><div class="ss"><div class="ss-v">₹3,200</div><div class="ss-l">Saved</div></div></div>
+            <div id="budgetWrap" style="margin:4px 16px 14px;background:#f7f9f8;border-radius:10px;padding:12px 14px;"></div>
             <div class="cbtn-row"><button class="cbtn active" onclick="swChart(this,'pie')">🥧 Pie</button><button class="cbtn" onclick="swChart(this,'bar')">📊 Bar</button><button class="cbtn" onclick="swChart(this,'line')">📈 Line</button></div>
             <div class="chart-box"><canvas id="chart1"></canvas></div>
             <button class="exp-btn" onclick="alert('📥 Exported as CSV / PDF / Excel')">📥 Export Data</button>
@@ -630,13 +665,13 @@
         <div class="screen currency-child" id="s-subs">
             <div class="screen-hdr"><button class="back-btn" onclick="go('s-currency','b-home')">←</button><h2>Subscriptions</h2></div>
             <div class="filters"><button class="chip active" onclick="fc(this)">All</button><button class="chip" onclick="fc(this)">Active</button><button class="chip" onclick="fc(this)">Renewing Soon</button><button class="chip" onclick="fc(this)">Monthly</button><button class="chip" onclick="fc(this)">Yearly</button></div>
-            <div class="sub-row"><div><div class="sr-name">📺 Netflix <span class="ren-badge">3d</span></div><div class="sr-date">Renews: 20 Jul</div></div><div><div class="sr-amt">₹649</div><div class="sr-freq">/month</div></div></div>
-            <div class="sub-row"><div><div class="sr-name">🎵 Spotify <span class="ren-badge">5d</span></div><div class="sr-date">Renews: 22 Jul</div></div><div><div class="sr-amt">₹119</div><div class="sr-freq">/month</div></div></div>
-            <div class="sub-row"><div><div class="sr-name">📦 Amazon Prime</div><div class="sr-date">Renews: 15 Aug</div></div><div><div class="sr-amt">₹1,499</div><div class="sr-freq">/year</div></div></div>
-            <div class="sub-row"><div><div class="sr-name">🎬 Disney+ Hotstar</div><div class="sr-date">Renews: 10 Aug</div></div><div><div class="sr-amt">₹499</div><div class="sr-freq">/month</div></div></div>
-            <div class="sub-row"><div><div class="sr-name">💪 Cult.fit Gym</div><div class="sr-date">Renews: 05 Aug</div></div><div><div class="sr-amt">₹2,500</div><div class="sr-freq">/month</div></div></div>
-            <div class="sub-row"><div><div class="sr-name">📡 ACT Fibernet</div><div class="sr-date">Renews: 30 Jul</div></div><div><div class="sr-amt">₹999</div><div class="sr-freq">/month</div></div></div>
-            <div class="sub-row"><div><div class="sr-name">☁️ iCloud Storage</div><div class="sr-date">Renews: 18 Aug</div></div><div><div class="sr-amt">₹75</div><div class="sr-freq">/month</div></div></div>
+            <div class="sub-row" style="cursor:pointer;" onclick="setReminder('Netflix')"><div><div class="sr-name">📺 Netflix <span class="ren-badge">3d</span></div><div class="sr-date">Renews: 20 Jul</div></div><div><div class="sr-amt">₹649</div><div class="sr-freq">/month</div></div></div>
+            <div class="sub-row" style="cursor:pointer;" onclick="setReminder('Spotify')"><div><div class="sr-name">🎵 Spotify <span class="ren-badge">5d</span></div><div class="sr-date">Renews: 22 Jul</div></div><div><div class="sr-amt">₹119</div><div class="sr-freq">/month</div></div></div>
+            <div class="sub-row" style="cursor:pointer;" onclick="setReminder('Amazon Prime')"><div><div class="sr-name">📦 Amazon Prime</div><div class="sr-date">Renews: 15 Aug</div></div><div><div class="sr-amt">₹1,499</div><div class="sr-freq">/year</div></div></div>
+            <div class="sub-row" style="cursor:pointer;" onclick="setReminder('Disney+ Hotstar')"><div><div class="sr-name">🎬 Disney+ Hotstar</div><div class="sr-date">Renews: 10 Aug</div></div><div><div class="sr-amt">₹499</div><div class="sr-freq">/month</div></div></div>
+            <div class="sub-row" style="cursor:pointer;" onclick="setReminder('Cult.fit Gym')"><div><div class="sr-name">💪 Cult.fit Gym</div><div class="sr-date">Renews: 05 Aug</div></div><div><div class="sr-amt">₹2,500</div><div class="sr-freq">/month</div></div></div>
+            <div class="sub-row" style="cursor:pointer;" onclick="setReminder('ACT Fibernet')"><div><div class="sr-name">📡 ACT Fibernet</div><div class="sr-date">Renews: 30 Jul</div></div><div><div class="sr-amt">₹999</div><div class="sr-freq">/month</div></div></div>
+            <div class="sub-row" style="cursor:pointer;" onclick="setReminder('iCloud Storage')"><div><div class="sr-name">☁️ iCloud Storage</div><div class="sr-date">Renews: 18 Aug</div></div><div><div class="sr-amt">₹75</div><div class="sr-freq">/month</div></div></div>
             <div class="stats" style="padding:12px 16px;">
                 <div class="stat"><div class="stat-v">7</div><div class="stat-l">Active Subs</div></div>
                 <div class="stat"><div class="stat-v">₹6,340</div><div class="stat-l">Monthly Total</div></div>
@@ -661,21 +696,30 @@
         <!-- ═══ QR WALLET ═══ -->
         <div class="screen currency-child" id="s-wallet">
             <div class="screen-hdr"><button class="back-btn" onclick="go('s-currency','b-home')">←</button><h2>QR Wallet</h2></div>
-            <div class="sec-label">🎟️ My Tickets & Passes</div>
-            <div id="walletPassList">
-                <div class="empty-hint" id="walletEmptyHint">
-                    <span class="ic">🎫</span>
-                    Book a movie, event, bus or flight — the entry QR shows up here automatically.
+            <div class="sub-tabs">
+                <button class="stab active" onclick="walletTab(this,'all')">All</button>
+                <button class="stab" onclick="walletTab(this,'Fun')">🎬 Movies &amp; Events</button>
+                <button class="stab" onclick="walletTab(this,'Travel')">🚌 Travel</button>
+                <button class="stab" onclick="walletTab(this,'Other')">🏪 Other</button>
+            </div>
+            <div id="walletTabAll">
+                <div class="sec-label">🎟️ My Tickets &amp; Passes</div>
+                <div id="walletPassList">
+                    <div class="empty-hint" id="walletEmptyHint">
+                        <span class="ic">🎫</span>
+                        Book a movie, event, bus or flight — the entry QR shows up here automatically.
+                    </div>
                 </div>
             </div>
-            <div class="sec-label" style="margin-top:16px;">Other QR Types</div>
-            <div class="filters"><button class="chip active" onclick="fc(this)">All</button><button class="chip" onclick="fc(this)">Transport</button><button class="chip" onclick="fc(this)">Entertainment</button><button class="chip" onclick="fc(this)">Shopping</button></div>
-            <div class="wgrid">
-                <div class="wcard"><div class="wcard-ico">🏪</div><div class="wcard-lbl">Store QR</div></div>
-                <div class="wcard"><div class="wcard-ico">🚇</div><div class="wcard-lbl">Metro QR</div></div>
-                <div class="wcard"><div class="wcard-ico">🅿️</div><div class="wcard-lbl">Parking QR</div></div>
-                <div class="wcard"><div class="wcard-ico">🏛️</div><div class="wcard-lbl">Temple Entry</div></div>
-                <div class="wcard" style="border:2px dashed var(--wa-green);background:#fff"><div class="wcard-ico">➕</div><div class="wcard-lbl" style="color:var(--wa-green)">Add New</div></div>
+            <div id="walletTabOther" style="display:none;">
+                <div class="sec-label">Other QR Types</div>
+                <div class="wgrid">
+                    <div class="wcard"><div class="wcard-ico">🏪</div><div class="wcard-lbl">Store QR</div></div>
+                    <div class="wcard"><div class="wcard-ico">🚇</div><div class="wcard-lbl">Metro QR</div></div>
+                    <div class="wcard"><div class="wcard-ico">🅿️</div><div class="wcard-lbl">Parking QR</div></div>
+                    <div class="wcard"><div class="wcard-ico">🏛️</div><div class="wcard-lbl">Temple Entry</div></div>
+                    <div class="wcard" style="border:2px dashed var(--wa-green);background:#fff"><div class="wcard-ico">➕</div><div class="wcard-lbl" style="color:var(--wa-green)">Add New</div></div>
+                </div>
             </div>
         </div>
 
@@ -697,6 +741,24 @@
                 <div class="stat"><div class="stat-v">₹2,450</div><div class="stat-l">Card Points</div></div>
                 <div class="stat"><div class="stat-v">₹580</div><div class="stat-l">Cashback</div></div>
             </div>
+
+            <div class="sec-label">🎨 App Settings</div>
+            <div class="lrow" style="cursor:pointer;" onclick="toggleDarkMode()">
+                <div class="lr-left"><div class="lr-name">🌙 Dark Mode</div><div class="lr-sub">Easier on the eyes at night</div></div>
+                <div class="switch" id="darkModeSwitch"><div class="switch-knob"></div></div>
+            </div>
+            <div class="lrow" style="cursor:pointer;" onclick="toggleNotifPref()">
+                <div class="lr-left"><div class="lr-name">🔔 Renewal Reminders</div><div class="lr-sub">Get notified before subscriptions renew</div></div>
+                <div class="switch on" id="notifSwitch"><div class="switch-knob"></div></div>
+            </div>
+
+            <div class="sec-label">📦 Backup &amp; Restore</div>
+            <div style="padding:0 16px 6px;font-size:11.5px;color:var(--wa-sub);line-height:1.5;">Your bills and tickets live only in this browser on this device. Export them to move to another phone or browser.</div>
+            <button class="pos-btn-style" style="display:block;width:calc(100% - 32px);margin:8px 16px;background:#25d366;color:#04140d;border:none;border-radius:10px;padding:12px;font-weight:800;font-size:13px;cursor:pointer;" onclick="exportBackup()">📤 Export My Data</button>
+            <label style="display:block;width:calc(100% - 32px);margin:0 16px 16px;background:#fff;color:var(--wa-dark);border:2px solid var(--wa-dark);border-radius:10px;padding:11px;font-weight:800;font-size:13px;cursor:pointer;text-align:center;">
+                📥 Import Data
+                <input type="file" accept=".json" style="display:none;" onchange="importBackup(event)">
+            </label>
         </div>
 
         <!-- ═══ BILL DETAIL ═══ -->
@@ -3797,6 +3859,7 @@ var qrcode = function() {
         txnCount += 1;
         recomputeTotals();
         renderCategoryList();
+        renderBudgetBar();
         if (document.getElementById('s-spend').classList.contains('active') && chart1) {
             loadChart(currentChartType);
         }
@@ -3863,6 +3926,7 @@ var qrcode = function() {
 
         const card = document.createElement('div');
         card.className = 'pass-card';
+        card.dataset.cat = pass.category;
         if (!silent) card.style.animation = 'billArrive 0.5s ease';
         card.innerHTML = `
             <div class="pc-ico">${walletIconFor(pass.category)}</div>
@@ -3875,6 +3939,47 @@ var qrcode = function() {
         `;
         card.addEventListener('click', () => openTicketView(pass));
         list.prepend(card);
+        applyWalletFilter();
+    }
+
+    let currentWalletTab = 'all';
+    function walletTab(btn, cat) {
+        currentWalletTab = cat;
+        document.querySelectorAll('#s-wallet .stab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        const allPane = document.getElementById('walletTabAll');
+        const otherPane = document.getElementById('walletTabOther');
+        if (cat === 'Other') {
+            allPane.style.display = 'none';
+            otherPane.style.display = 'block';
+        } else {
+            allPane.style.display = 'block';
+            otherPane.style.display = 'none';
+            applyWalletFilter();
+        }
+    }
+
+    function applyWalletFilter() {
+        const cards = document.querySelectorAll('#walletPassList .pass-card');
+        let visibleCount = 0;
+        cards.forEach(card => {
+            const match = currentWalletTab === 'all' || card.dataset.cat === currentWalletTab;
+            card.style.display = match ? 'flex' : 'none';
+            if (match) visibleCount++;
+        });
+        const hint = document.getElementById('walletEmptyHint');
+        if (visibleCount === 0 && cards.length > 0 && !hint) {
+            const list = document.getElementById('walletPassList');
+            const msg = document.createElement('div');
+            msg.className = 'empty-hint';
+            msg.id = 'walletFilterEmptyHint';
+            msg.innerHTML = `<span class="ic">🔍</span>No passes in this category yet.`;
+            document.querySelectorAll('#walletFilterEmptyHint').forEach(e => e.remove());
+            list.appendChild(msg);
+        } else {
+            const existing = document.getElementById('walletFilterEmptyHint');
+            if (existing) existing.remove();
+        }
     }
 
     function openTicketView(pass) {
@@ -4079,16 +4184,149 @@ var qrcode = function() {
         }
     }
 
-    // Register service worker
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+    // ═══════════════════════════════════════════
+    // DARK MODE
+    // ═══════════════════════════════════════════
+    function applyTheme(dark) {
+        document.body.setAttribute('data-theme', dark ? 'dark' : 'light');
+        const sw = document.getElementById('darkModeSwitch');
+        if (sw) sw.classList.toggle('on', dark);
+    }
+    function toggleDarkMode() {
+        const isDark = document.body.getAttribute('data-theme') === 'dark';
+        applyTheme(!isDark);
+        try { localStorage.setItem('payceipt_theme', !isDark ? 'dark' : 'light'); } catch(e){}
+    }
+    function toggleNotifPref() {
+        const sw = document.getElementById('notifSwitch');
+        const on = !sw.classList.contains('on');
+        sw.classList.toggle('on', on);
+        try { localStorage.setItem('payceipt_notif', on ? '1' : '0'); } catch(e){}
+        showBillToast(on ? '🔔 Renewal reminders turned on' : '🔕 Renewal reminders turned off');
+    }
+    function setReminder(name) {
+        showBillToast(`🔔 Reminder set for ${name} renewal`);
+    }
+
+    // ═══════════════════════════════════════════
+    // BACKUP & RESTORE — the real fix for moving data between devices
+    // ═══════════════════════════════════════════
+    function exportBackup() {
+        const data = {
+            bills: JSON.parse(localStorage.getItem('payceipt_bills') || '[]'),
+            wallet: JSON.parse(localStorage.getItem('payceipt_wallet') || '[]'),
+            exportedAt: new Date().toISOString(),
+            app: 'PAYCEIPT'
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `payceipt-backup-${new Date().toISOString().slice(0,10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        showBillToast('📤 Backup downloaded — move it to another device');
+    }
+
+    function importBackup(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                if (data.bills) {
+                    const existing = JSON.parse(localStorage.getItem('payceipt_bills') || '[]');
+                    const existingFps = new Set(existing.map(billFingerprint));
+                    const merged = existing.concat(data.bills.filter(b => !existingFps.has(billFingerprint(b))));
+                    localStorage.setItem('payceipt_bills', JSON.stringify(merged.slice(0,100)));
+                }
+                if (data.wallet) {
+                    const existingW = JSON.parse(localStorage.getItem('payceipt_wallet') || '[]');
+                    const existingIds = new Set(existingW.map(p => p.id));
+                    const mergedW = existingW.concat(data.wallet.filter(p => !existingIds.has(p.id)));
+                    localStorage.setItem('payceipt_wallet', JSON.stringify(mergedW.slice(0,100)));
+                }
+                showBillToast('📥 Data imported — reloading…');
+                setTimeout(() => location.reload(), 1200);
+            } catch (err) {
+                alert('That file doesn\u2019t look like a valid PAYCEIPT backup.');
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    // ═══════════════════════════════════════════
+    // MONTHLY BUDGET (Spending screen)
+    // ═══════════════════════════════════════════
+    let monthlyBudget = 0;
+    function loadBudget() {
+        try { monthlyBudget = parseInt(localStorage.getItem('payceipt_budget') || '0', 10) || 0; } catch(e){}
+    }
+    function renderBudgetBar() {
+        const wrap = document.getElementById('budgetWrap');
+        if (!wrap) return;
+        if (!monthlyBudget) {
+            wrap.innerHTML = `<button class="pos-btn-style" style="width:100%;background:#f0f2f5;color:var(--wa-dark);border:1.5px dashed var(--wa-border);border-radius:10px;padding:12px;font-weight:700;font-size:12.5px;cursor:pointer;" onclick="promptSetBudget()">🎯 Set a Monthly Budget</button>`;
+            return;
+        }
+        const spent = Object.values(spendingCategories).reduce((a,b)=>a+b,0);
+        const pct = Math.min(100, Math.round((spent / monthlyBudget) * 100));
+        const over = spent > monthlyBudget;
+        wrap.innerHTML = `
+            <div style="display:flex;justify-content:space-between;font-size:11.5px;font-weight:700;margin-bottom:6px;">
+                <span>🎯 Budget: ₹${monthlyBudget.toLocaleString('en-IN')}</span>
+                <span style="color:${over?'#c0392b':'var(--wa-dark)'};">${pct}% used</span>
+            </div>
+            <div style="height:8px;background:#eee;border-radius:4px;overflow:hidden;">
+                <div style="height:100%;width:${pct}%;background:${over?'#c0392b':'var(--wa-green)'};transition:width 0.4s;"></div>
+            </div>
+            <div style="text-align:right;margin-top:8px;">
+                <button style="background:none;border:none;color:var(--wa-sub);font-size:10.5px;text-decoration:underline;cursor:pointer;" onclick="promptSetBudget()">Edit budget</button>
+            </div>
+        `;
+    }
+    function promptSetBudget() {
+        const val = prompt('Set your monthly spending budget (₹):', monthlyBudget || '15000');
+        if (val === null) return;
+        const num = parseInt(val, 10);
+        if (isNaN(num) || num <= 0) return;
+        monthlyBudget = num;
+        try { localStorage.setItem('payceipt_budget', String(num)); } catch(e){}
+        renderBudgetBar();
+    }
+
+    // ═══════════════════════════════════════════
+    // BILLS SEARCH
+    // ═══════════════════════════════════════════
+    function filterBillsSearch(val) {
+        const q = val.trim().toLowerCase();
+        document.querySelectorAll('#bt-rec .lrow').forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = (!q || text.includes(q)) ? 'flex' : 'none';
+        });
+    }
 
     // Boot: restore any bills saved from earlier scans/simulations, then handle a fresh scan if we arrived via QR
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+    loadBudget();
     restoreSavedBills();
     restoreSavedWalletPasses();
     processIncomingURL();
     recomputeTotals();
     renderCategoryList();
+    renderBudgetBar();
 
+    try {
+        applyTheme(localStorage.getItem('payceipt_theme') === 'dark');
+        const notifOn = localStorage.getItem('payceipt_notif');
+        if (notifOn === '0') {
+            const sw = document.getElementById('notifSwitch');
+            if (sw) sw.classList.remove('on');
+        }
+    } catch(e){}
 
 </script>
 <style>
