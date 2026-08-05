@@ -3733,11 +3733,14 @@ var qrcode = function() {
                 </div>
             `;
         } else {
+            const subText = bill.m === 'Email'
+                ? "Imported from your email invoice — save the itemised digital bill?"
+                : "Paid in cash at the counter — save the digital bill?";
             card.innerHTML = `
                 <div class="pay-merchant-icon">${INBOX_ICONS[bill.c]||'🏪'}</div>
                 <div class="pay-merchant-name">${bill.s}</div>
                 <div class="pay-amount">₹${bill.t.toLocaleString('en-IN')}</div>
-                <div class="pay-sub">Paid in cash at the counter — save the digital bill?</div>
+                <div class="pay-sub">${subText}</div>
                 ${itemsHtml}
                 <button class="pay-cta-btn" onclick="confirmCashSave()">🧾 Save to Currency Tab</button>
             `;
@@ -3827,7 +3830,7 @@ var qrcode = function() {
     function applyBill(bill, opts) {
         opts = opts || {};
         const category = bill.c && CATEGORY_META[bill.c] ? bill.c : 'Shop';
-        const methodLabel = bill.m === 'UPI' ? 'WhatsApp Pay' : 'Cash · Digital bill';
+        const methodLabel = bill.m === 'UPI' ? 'WhatsApp Pay' : (bill.m === 'Email' ? 'Imported from email' : 'Cash · Digital bill');
         const billJson = JSON.stringify(bill).replace(/'/g, '&#39;').replace(/"/g,'&quot;');
 
         // 1. Bills > Receipts (tappable)
@@ -3875,10 +3878,12 @@ var qrcode = function() {
         const paperEl = document.querySelector('#s-currency .bm-val');
         if (paperEl) paperEl.textContent = ((parseFloat(paperEl.textContent) || 0) + 0.1).toFixed(1) + 'kg';
 
-        // Movie/event/travel bookings also get an entry QR saved to the wallet
-        // (only for genuinely new bills — restored history already has its passes
-        // repopulated separately by restoreSavedWalletPasses(), so we don't duplicate here)
-        if (!opts.silent && (category === 'Fun' || category === 'Travel')) {
+        // Movie/event/travel bookings also get an entry QR saved to the wallet.
+        // maybeAddWalletPasses() dedups against storage itself, so this safely runs
+        // both for live confirmations AND for bills restored from an earlier session —
+        // that's what backfills passes for bills that were saved without the wallet
+        // ever being live to receive them.
+        if (category === 'Fun' || category === 'Travel') {
             maybeAddWalletPasses(bill, opts);
         }
 
@@ -3901,8 +3906,14 @@ var qrcode = function() {
     function maybeAddWalletPasses(bill, opts) {
         opts = opts || {};
         if (!bill.i || !bill.i.length) return;
+        const billFp = billFingerprint(bill);
+        let existingWallet = [];
+        try { existingWallet = JSON.parse(localStorage.getItem('payceipt_wallet') || '[]'); } catch(e) {}
+        if (existingWallet.some(p => p.billFp === billFp)) return; // already created — nothing to do
+
         const passes = bill.i.map(item => ({
             id: makeTicketId(),
+            billFp: billFp,
             title: item[0],
             qty: item[2],
             store: bill.s,
@@ -4015,10 +4026,12 @@ var qrcode = function() {
     }
 
     function restoreSavedWalletPasses() {
-        try {
-            const saved = JSON.parse(localStorage.getItem('payceipt_wallet') || '[]');
-            saved.slice().reverse().forEach(p => renderWalletPass(p, true));
-        } catch (e) { /* nothing to restore */ }
+        let saved = [];
+        try { saved = JSON.parse(localStorage.getItem('payceipt_wallet') || '[]'); } catch (e) { return; }
+        saved.slice().reverse().forEach(p => {
+            try { renderWalletPass(p, true); }
+            catch (e) { console.warn('Skipped a malformed wallet pass during restore', e); }
+        });
     }
 
     function openBillDetail(bill) {
@@ -4034,7 +4047,7 @@ var qrcode = function() {
                 <div style="font-size:17px;font-weight:800;margin-top:6px;">${bill.s}</div>
                 <div style="font-size:11.5px;color:var(--sub);margin-top:2px;">${formatBillTime(bill.ts)}</div>
                 <div style="font-size:30px;font-weight:800;color:var(--wa-dark);margin-top:10px;">₹${bill.t.toLocaleString('en-IN')}</div>
-                <div style="display:inline-block;margin-top:6px;background:${bill.m==='UPI'?'#e8f5e9':'#fff3e0'};color:${bill.m==='UPI'?'#0d7a3f':'#a06400'};font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:10px;">${bill.m==='UPI'?'💬 Paid via WhatsApp Pay':'💵 Paid in Cash'}</div>
+                <div style="display:inline-block;margin-top:6px;background:${bill.m==='UPI'?'#e8f5e9':(bill.m==='Email'?'#e3f0fc':'#fff3e0')};color:${bill.m==='UPI'?'#0d7a3f':(bill.m==='Email'?'#1a5aa8':'#a06400')};font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:10px;">${bill.m==='UPI'?'💬 Paid via WhatsApp Pay':(bill.m==='Email'?'✉️ Imported from Email':'💵 Paid in Cash')}</div>
             </div>
             <div class="sec-label">Itemised Bill</div>
             ${itemsHtml}
@@ -4055,7 +4068,7 @@ var qrcode = function() {
 
     function billShareText(b) {
         const items = (b.i||[]).map(x => `• ${x[0]}${x[2]>1?' x'+x[2]:''} — ₹${x[1]*x[2]}`).join('\n');
-        return `🧾 *Receipt from ${b.s}*\n${formatBillTime(b.ts)}\n\n${items}\n\n*Total: ₹${b.t.toLocaleString('en-IN')}*\nPaid via ${b.m==='UPI'?'WhatsApp Pay':'Cash'}\n\nSent via PAYCEIPT`;
+        return `🧾 *Receipt from ${b.s}*\n${formatBillTime(b.ts)}\n\n${items}\n\n*Total: ₹${b.t.toLocaleString('en-IN')}*\nPaid via ${b.m==='UPI'?'WhatsApp Pay':(b.m==='Email'?'Online (email receipt)':'Cash')}\n\nSent via PAYCEIPT`;
     }
 
     function shareBillWhatsApp() {
@@ -4068,7 +4081,7 @@ var qrcode = function() {
         if (!currentDetailBill) return;
         const b = currentDetailBill;
         const items = (b.i||[]).map(x => `- ${x[0]}${x[2]>1?' x'+x[2]:''} : Rs.${x[1]*x[2]}`).join('\n');
-        const bodyText = `Receipt from ${b.s}\n${formatBillTime(b.ts)}\n\n${items}\n\nTotal: Rs.${b.t.toLocaleString('en-IN')}\nPaid via ${b.m==='UPI'?'WhatsApp Pay':'Cash'}\n\nSent via PAYCEIPT`;
+        const bodyText = `Receipt from ${b.s}\n${formatBillTime(b.ts)}\n\n${items}\n\nTotal: Rs.${b.t.toLocaleString('en-IN')}\nPaid via ${b.m==='UPI'?'WhatsApp Pay':(b.m==='Email'?'Online (email receipt)':'Cash')}\n\nSent via PAYCEIPT`;
         window.location.href = `mailto:?subject=${encodeURIComponent('Receipt from ' + b.s)}&body=${encodeURIComponent(bodyText)}`;
     }
 
@@ -4137,13 +4150,16 @@ var qrcode = function() {
     function billFingerprint(bill) { return bill.s + '|' + bill.t + '|' + bill.ts; }
 
     function restoreSavedBills() {
-        try {
-            const saved = JSON.parse(localStorage.getItem('payceipt_bills') || '[]');
-            saved.slice().reverse().forEach(bill => {
+        let saved = [];
+        try { saved = JSON.parse(localStorage.getItem('payceipt_bills') || '[]'); } catch (e) { return; }
+        saved.slice().reverse().forEach(bill => {
+            try {
                 applyBill(bill, { silent: true });
                 restoredIds.add(billFingerprint(bill));
-            });
-        } catch (e) { /* nothing to restore */ }
+            } catch (e) {
+                console.warn('Skipped a malformed bill during restore', e, bill);
+            }
+        });
     }
 
     function processIncomingURL() {
@@ -4171,6 +4187,16 @@ var qrcode = function() {
                     if (!restoredIds.has(fp)) {
                         restoredIds.add(fp);
                         startPaymentFlow(e.data.bill);
+                    }
+                }
+                // pos-demo.html's "Confirm & Save (Demo Shortcut)" button already wrote this
+                // bill straight to storage — if this tab happens to be open, reflect it live
+                // instead of waiting for a reload.
+                if (e.data && e.data.type === 'bill_saved_direct' && e.data.bill) {
+                    const fp = billFingerprint(e.data.bill);
+                    if (!restoredIds.has(fp)) {
+                        restoredIds.add(fp);
+                        applyBill(e.data.bill, { isNew: true });
                     }
                 }
             };
@@ -4309,11 +4335,14 @@ var qrcode = function() {
         });
     }
 
-    // Boot: restore any bills saved from earlier scans/simulations, then handle a fresh scan if we arrived via QR
+    // Boot: restore any bills saved from earlier scans/simulations, then handle a fresh scan if we arrived via QR.
+    // Wallet passes MUST restore before bills — maybeAddWalletPasses() (called from applyBill)
+    // checks storage to avoid recreating a pass that already exists, so the wallet needs to
+    // already reflect prior sessions before bills replay through it.
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
     loadBudget();
-    restoreSavedBills();
     restoreSavedWalletPasses();
+    restoreSavedBills();
     processIncomingURL();
     recomputeTotals();
     renderCategoryList();
