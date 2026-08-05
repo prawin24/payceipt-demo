@@ -13,11 +13,16 @@
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif; background:var(--bg); color:var(--ink); padding:20px;}
 
-  .page-header{max-width:1040px; margin:0 auto 20px; text-align:center;}
+  .page-header{max-width:1040px; margin:0 auto 16px; text-align:center;}
   .page-header h1{font-size:22px; font-weight:800; color:var(--wa-dark);}
   .page-header p{font-size:13px; color:var(--sub); margin-top:6px;}
 
-  .breadcrumb{max-width:1040px; margin:0 auto 16px; display:flex; align-items:center; justify-content:center; gap:10px; font-size:13px; color:var(--sub);}
+  /* top mode tabs */
+  .mode-tabs{max-width:1040px; margin:0 auto 14px; display:flex; gap:10px; justify-content:center;}
+  .mode-tab-btn{flex:0 0 auto; background:#fff; border:2px solid var(--border); border-radius:14px; padding:10px 22px; font-size:13px; font-weight:800; cursor:pointer; color:var(--sub); transition:all 0.15s;}
+  .mode-tab-btn.active{background:var(--wa-dark); border-color:var(--wa-dark); color:#fff;}
+
+  .breadcrumb{max-width:1040px; margin:0 auto 16px; display:flex; align-items:center; justify-content:center; gap:10px; font-size:13px; color:var(--sub); flex-wrap:wrap;}
   .breadcrumb b{color:var(--ink);}
   .breadcrumb button{background:#fff; border:1px solid var(--border); border-radius:14px; padding:5px 12px; font-size:11.5px; cursor:pointer; color:var(--wa-dark); font-weight:700;}
 
@@ -26,7 +31,7 @@
 
   /* ── POS TERMINAL ── */
   .pos-unit{background:#1c1c1e; border-radius:22px; padding:14px; box-shadow:0 20px 50px rgba(0,0,0,0.18);}
-  .pos-screen{background:#fff; border-radius:14px; overflow:hidden; min-height:640px; display:flex; flex-direction:column;}
+  .pos-screen{background:#fff; border-radius:14px; overflow:hidden; min-height:680px; display:flex; flex-direction:column;}
   .pos-topbar{background:#1c1c1e; color:#fff; padding:8px 14px; font-size:11px; display:flex; justify-content:space-between; font-family:monospace;}
   .pos-header{background:var(--wa-dark); color:#fff; padding:14px 16px;}
   .pos-header .store{font-size:15px; font-weight:800;}
@@ -34,7 +39,7 @@
 
   .pos-body{flex:1; padding:16px; display:flex; flex-direction:column; overflow-y:auto;}
 
-  /* business selector cards */
+  /* business/site selector cards */
   .biz-card{display:flex; align-items:center; gap:14px; background:#f7f7f7; border:1.5px solid var(--border); border-radius:14px; padding:16px; margin-bottom:12px; cursor:pointer; transition:all 0.15s;}
   .biz-card:active{background:var(--wa-light); border-color:var(--wa-green);}
   .biz-card .bi{font-size:30px;}
@@ -42,6 +47,10 @@
   .biz-card .bt .bn{font-size:14px; font-weight:800;}
   .biz-card .bt .bd{font-size:11.5px; color:var(--sub); margin-top:2px;}
   .biz-card .bc{font-size:18px; color:var(--sub);}
+  .biz-card .bbadge{position:absolute; top:-7px; right:10px; font-size:9px; font-weight:800; padding:2px 8px; border-radius:8px;}
+  .biz-card{position:relative;}
+  .bbadge.ready{background:#e8f5e9; color:#0d7a3f;}
+  .bbadge.email{background:#fff3e0; color:#a06400;}
 
   .cart-total{display:flex; justify-content:space-between; padding:12px 0 6px; font-weight:800; font-size:16px; color:var(--wa-dark); border-top:2px solid var(--wa-dark); margin-top:6px;}
 
@@ -54,7 +63,7 @@
 
   .method-row{display:flex; flex-direction:column; gap:10px; margin-top:16px;}
 
-  /* ── inventory / catalog builder ── */
+  /* ── inventory / catalog builder (offline) ── */
   .add-item-form{display:flex; gap:6px; margin-bottom:10px;}
   .add-item-form input{border:1.5px solid var(--border); border-radius:8px; padding:8px 9px; font-size:12.5px; font-family:inherit;}
   .add-item-form input.name-in{flex:2; min-width:0;}
@@ -89,6 +98,79 @@
   .cart-row .cx{background:none; border:none; color:#c0392b; font-size:15px; cursor:pointer; padding:2px 6px;}
   .cart-empty{text-align:center; color:var(--sub); font-size:12px; padding:14px 0;}
 
+  /* ── E-COMMERCE (online) ── */
+  .shop-header{display:flex; align-items:center; gap:8px; margin-bottom:12px;}
+  .shop-search{flex:1; border:1.5px solid var(--border); border-radius:20px; padding:8px 14px; font-size:12px; font-family:inherit;}
+  .shop-cart-btn{position:relative; background:var(--wa-dark); color:#fff; border:none; border-radius:10px; padding:9px 12px; font-size:16px; cursor:pointer; flex-shrink:0;}
+  .shop-cart-badge{position:absolute; top:-6px; right:-6px; background:var(--gold); color:#fff; font-size:9px; font-weight:800; border-radius:8px; padding:1px 5px; min-width:14px; text-align:center;}
+
+  .cat-chip-row{display:flex; gap:6px; overflow-x:auto; padding-bottom:8px; margin-bottom:12px;}
+  .cat-chip{flex-shrink:0; background:#f0f2f5; border:1.5px solid var(--border); border-radius:16px; padding:7px 14px; font-size:11.5px; font-weight:700; cursor:pointer; white-space:nowrap; transition:all 0.15s;}
+  .cat-chip.active{background:var(--wa-dark); color:#fff; border-color:var(--wa-dark);}
+
+  .prod-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;}
+  .prod-card{background:#fff; border:1.5px solid var(--border); border-radius:12px; padding:10px; text-align:left; position:relative;}
+  .prod-img{width:100%; height:64px; background:#f5f5f5; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:30px; margin-bottom:8px;}
+  .prod-name{font-size:11.5px; font-weight:700; line-height:1.3; min-height:29px;}
+  .prod-price{font-size:13px; font-weight:800; color:var(--wa-dark); margin-top:4px;}
+  .prod-warranty{display:inline-block; margin-top:4px; background:#e8f5e9; color:#0d7a3f; font-size:8.5px; font-weight:700; padding:2px 6px; border-radius:6px;}
+  .prod-size-row{display:flex; gap:4px; margin-top:6px; flex-wrap:wrap;}
+  .prod-size-row select{width:100%; border:1px solid var(--border); border-radius:6px; padding:4px; font-size:10.5px;}
+  .prod-add-btn{width:100%; background:var(--wa-green); color:#04140d; border:none; border-radius:7px; padding:7px; font-size:11px; font-weight:800; cursor:pointer; margin-top:7px;}
+
+  .sticky-cart-bar{position:sticky; bottom:0; background:var(--wa-dark); color:#fff; border-radius:10px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; margin-top:10px; cursor:pointer; box-shadow:0 -4px 12px rgba(0,0,0,0.15);}
+  .sticky-cart-bar .scb-left{font-size:12px; font-weight:700;}
+  .sticky-cart-bar .scb-right{font-size:12px; font-weight:800; display:flex; align-items:center; gap:6px;}
+
+  .cart-review-row{display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border);}
+  .cart-review-row .crn{font-size:12.5px; font-weight:700;}
+  .cart-review-row .crs{font-size:10.5px; color:var(--sub); margin-top:2px;}
+  .qty-stepper{display:flex; align-items:center; gap:8px;}
+  .qty-stepper button{width:24px; height:24px; border-radius:50%; border:1.5px solid var(--border); background:#fff; font-size:14px; cursor:pointer; font-weight:800;}
+  .qty-stepper span{font-size:12.5px; font-weight:700; min-width:16px; text-align:center;}
+
+  .pay-method-card{display:flex; align-items:center; gap:12px; background:#fff; border:2px solid var(--border); border-radius:12px; padding:13px 14px; margin-bottom:10px; cursor:pointer; transition:all 0.15s;}
+  .pay-method-card:active{background:#f7f7f7;}
+  .pay-method-card.highlight{border-color:var(--wa-green); background:linear-gradient(135deg, #f0fdf5, #fff);}
+  .pay-method-card .pm-icon{font-size:26px; flex-shrink:0;}
+  .pay-method-card .pm-body{flex:1;}
+  .pay-method-card .pm-name{font-size:13px; font-weight:800;}
+  .pay-method-card .pm-sub{font-size:10.5px; color:var(--sub); margin-top:2px; line-height:1.4;}
+  .pay-method-card .pm-new{background:var(--wa-green); color:#04140d; font-size:8.5px; font-weight:800; padding:2px 7px; border-radius:8px; margin-left:6px;}
+
+  .site-badge-nonintegrated{background:#fff3e0; border:1px solid #f0dca0; border-radius:10px; padding:10px 12px; font-size:11px; color:#8a6600; margin-bottom:12px; line-height:1.5;}
+
+  /* email inbox simulation */
+  .inbox-item{display:flex; gap:10px; background:#f9f9f9; border:1px solid var(--border); border-left:3px solid var(--wa-dark); border-radius:8px; padding:11px 12px; margin-bottom:8px; cursor:pointer; transition:all 0.15s;}
+  .inbox-item:active{background:#f0f0f0;}
+  .inbox-item .ii-ico{font-size:20px;}
+  .inbox-item .ii-body{flex:1;}
+  .inbox-item .ii-from{font-size:12px; font-weight:800;}
+  .inbox-item .ii-subj{font-size:11.5px; color:#333; margin-top:2px;}
+  .inbox-item .ii-time{font-size:10px; color:var(--sub); margin-top:2px;}
+  .inbox-item .ii-dot{width:8px; height:8px; border-radius:50%; background:#1a73e8; flex-shrink:0; margin-top:4px;}
+
+  .email-view{background:#fff; border:1px solid var(--border); border-radius:10px; padding:14px;}
+  .email-view .ev-subj{font-size:14px; font-weight:800; margin-bottom:4px;}
+  .email-view .ev-meta{font-size:11px; color:var(--sub); margin-bottom:12px;}
+  .email-view .ev-body{font-size:12px; color:#333; line-height:1.6; margin-bottom:14px;}
+  .pdf-attachment{display:flex; align-items:center; gap:10px; background:#fdf2f2; border:1.5px solid #f5c6c6; border-radius:10px; padding:11px 12px; cursor:pointer;}
+  .pdf-attachment .pa-ico{font-size:24px; color:#c0392b;}
+  .pdf-attachment .pa-body{flex:1;}
+  .pdf-attachment .pa-name{font-size:12px; font-weight:800;}
+  .pdf-attachment .pa-size{font-size:10px; color:var(--sub);}
+  .pdf-attachment .pa-dl{font-size:18px; color:var(--wa-dark);}
+
+  .download-progress{background:#f0f2f5; border-radius:8px; height:8px; overflow:hidden; margin:14px 0;}
+  .download-progress-fill{height:100%; background:var(--wa-green); width:0%; transition:width 1.2s ease;}
+
+  .move-prompt-card{background:#fff; border:2px solid var(--wa-green); border-radius:14px; padding:18px; text-align:center; margin-top:14px;}
+  .move-prompt-card .mp-ico{font-size:38px; margin-bottom:8px;}
+  .move-prompt-card .mp-title{font-size:14px; font-weight:800;}
+  .move-prompt-card .mp-sub{font-size:11.5px; color:var(--sub); margin-top:6px; line-height:1.5;}
+  .move-btn-row{display:flex; gap:8px; margin-top:14px;}
+  .move-btn-row button{flex:1;}
+
   .qr-real-wrap{width:150px; height:150px; margin:0 auto 8px; padding:6px; background:#fff; border-radius:12px; display:flex; align-items:center; justify-content:center;}
   .qr-real-wrap.payment{border:3px solid #1a73e8;}
   .qr-real-wrap.bill{border:3px solid var(--wa-green);}
@@ -109,6 +191,8 @@
   @keyframes pulseDot{0%,100%{opacity:1;}50%{opacity:0.3;}}
 
   .reset-link{text-align:center; margin-top:auto; padding-top:14px;}
+  .back-nav-btn{background:none; border:none; color:var(--wa-dark); font-size:13px; font-weight:800; cursor:pointer; padding:2px 0 14px; display:flex; align-items:center; gap:2px;}
+  .back-nav-btn:active{opacity:0.6;}
   .reset-link button{background:none; border:none; color:var(--sub); font-size:11.5px; text-decoration:underline; cursor:pointer;}
 
   /* completion screen */
@@ -123,8 +207,15 @@
   .done-btn-row{display:flex; gap:8px; margin-top:6px;}
   .done-btn-row button{flex:1;}
 
+  /* generic order-placed (non-whatsapp) screen */
+  .order-placed-wrap{text-align:center; padding:20px 4px;}
+  .op-ico{font-size:48px;}
+  .op-title{font-size:15px; font-weight:800; margin-top:10px;}
+  .op-sub{font-size:12px; color:var(--sub); margin-top:6px; line-height:1.6;}
+  .op-compare{background:#fffbea; border:1px solid #f0dca0; border-radius:10px; padding:12px 14px; margin-top:16px; font-size:11.5px; color:#7a5c00; text-align:left; line-height:1.5;}
+
   /* ── CONNECTOR ── */
-  .connector{display:flex; flex-direction:column; align-items:center; justify-content:center; height:640px; position:relative;}
+  .connector{display:flex; flex-direction:column; align-items:center; justify-content:center; height:680px; position:relative;}
   .connector-arrow{font-size:26px; color:var(--sub); opacity:0.35;}
   .flying-doc{position:absolute; top:50%; left:50%; width:34px; height:44px; background:#fff; border:2px solid var(--wa-green); border-radius:4px; opacity:0; transform:translate(-50%,-50%) scale(0.5); box-shadow:0 6px 16px rgba(0,0,0,0.2);}
   .flying-doc::after{content:'🧾'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:18px;}
@@ -141,7 +232,7 @@
   /* ── CUSTOMER PHONE ── */
   .phone-unit{width:100%; max-width:300px; margin:0 auto; background:#000; border-radius:36px; padding:10px; box-shadow:0 20px 50px rgba(0,0,0,0.18); position:relative;}
   .phone-notch{position:absolute; top:10px; left:50%; transform:translateX(-50%); width:100px; height:20px; background:#000; border-radius:0 0 12px 12px; z-index:10;}
-  .phone-screen{background:#fff; border-radius:26px; overflow:hidden; min-height:640px; display:flex; flex-direction:column; padding-top:20px;}
+  .phone-screen{background:#fff; border-radius:26px; overflow:hidden; min-height:680px; display:flex; flex-direction:column; padding-top:20px;}
 
   .wa-header{background:var(--wa-dark); color:#fff; padding:10px 14px; font-size:15px; font-weight:800;}
   .wa-tabs{background:var(--wa-dark); display:flex; padding:0 8px;}
@@ -187,8 +278,13 @@
 <body>
 
   <div class="page-header">
-    <h1>🧾 PAYCEIPT × WhatsApp — POS Integration Demo</h1>
-    <p>How any merchant's checkout delivers a digital bill into WhatsApp's Currency tab — grocery, movies/events, or travel.</p>
+    <h1>🧾 PAYCEIPT × WhatsApp — Integration Demo</h1>
+    <p>How any checkout — in-store or online — delivers a digital bill into WhatsApp's Currency tab.</p>
+  </div>
+
+  <div class="mode-tabs">
+    <button class="mode-tab-btn active" id="modeTabOffline" onclick="switchTopMode('offline')">🏪 Offline (In-Store)</button>
+    <button class="mode-tab-btn" id="modeTabOnline" onclick="switchTopMode('online')">🛒 Online (E-Commerce)</button>
   </div>
 
   <div class="breadcrumb" id="breadcrumb">
@@ -197,7 +293,7 @@
 
   <div class="stage">
 
-    <!-- ═══════ POS TERMINAL ═══════ -->
+    <!-- ═══════ POS TERMINAL / DEVICE ═══════ -->
     <div class="pos-unit">
       <div class="pos-screen">
         <div class="pos-topbar"><span>● POS-TERMINAL-04</span><span id="clock">09:42 AM</span></div>
@@ -256,7 +352,7 @@
   </div>
 
   <div class="flow-caption" id="flowCaption"></div>
-  <div class="sync-note">📌 <b>To confirm payment for real:</b> scan the generated QR with the PAYCEIPT app on another phone — it will ask for the WhatsApp Pay PIN (<b>2504</b> in this demo) before the bill is saved. If both apps are open in tabs of <b>this same browser</b>, this screen updates automatically the moment payment is confirmed. Testing across two separate devices? Use the manual "I've completed payment" button after confirming on the other phone.</div>
+  <div class="sync-note">📌 <b>To confirm for real:</b> scan the QR (or tap "Open in WhatsApp App") using the PAYCEIPT app on another phone — it will ask for the WhatsApp Pay PIN (<b>2504</b> in this demo) before saving. Same browser, two tabs? This screen updates automatically. Two separate devices? Use the manual confirm button after confirming on the other phone.</div>
 
 <script>
 /* ════════════════════════════════════════════════════════
@@ -2562,10 +2658,14 @@ var qrcode = function() {
 }));
 
 </script>
+
 <script>
   const APP_URL = 'https://prawin24.github.io/payceipt-demo/';
   const TODAY = new Date().toISOString().split('T')[0];
 
+  // ═══════════════════════════════════════════
+  // OFFLINE BUSINESS DATA (unchanged from previous version)
+  // ═══════════════════════════════════════════
   const BUSINESSES = {
     store: {
       name: "Praveen's Store", icon:'🏪', category:'Grocery', kind:'freeform',
@@ -2605,9 +2705,65 @@ var qrcode = function() {
     }
   };
 
+  // ═══════════════════════════════════════════
+  // ONLINE SITE DATA
+  // ═══════════════════════════════════════════
+  const SHOPEASE_CATEGORIES = {
+    toys: { label:'🧸 Toys', products: [
+      { name:'Building Blocks Set (250pc)', price:899, img:'🧱' },
+      { name:'Remote Control Race Car', price:1499, img:'🚗' },
+      { name:'Dollhouse Playset', price:2299, img:'🏠' },
+      { name:'Jigsaw Puzzle 500pc', price:399, img:'🧩' },
+    ]},
+    electronics: { label:'📱 Electronics', products:[
+      { name:'Wireless Earbuds Pro', price:2999, img:'🎧', warranty:'1 Year Warranty' },
+      { name:'Smartwatch Series 5', price:4499, img:'⌚', warranty:'1 Year Warranty' },
+      { name:'Bluetooth Speaker', price:1799, img:'🔊', warranty:'6 Month Warranty' },
+      { name:'Power Bank 20000mAh', price:1299, img:'🔋', warranty:'1 Year Warranty' },
+    ]},
+    appliances: { label:'🔌 Appliances', products:[
+      { name:'Mixer Grinder 750W', price:3499, img:'🧃', warranty:'2 Year Warranty' },
+      { name:'Air Fryer 4L', price:5999, img:'🍟', warranty:'1 Year Warranty' },
+      { name:'Electric Kettle 1.5L', price:899, img:'☕', warranty:'1 Year Warranty' },
+      { name:'Room Heater', price:2199, img:'🔥', warranty:'1 Year Warranty' },
+    ]},
+    clothes: { label:'👕 Clothes', products:[
+      { name:"Men's Cotton T-Shirt", price:599, img:'👕', sizes:['S','M','L','XL'] },
+      { name:"Women's Kurti", price:899, img:'👗', sizes:['S','M','L','XL'] },
+      { name:'Denim Jacket', price:1799, img:'🧥', sizes:['S','M','L','XL'] },
+      { name:'Running Shoes', price:2499, img:'👟', sizes:['7','8','9','10'] },
+    ]},
+    produce: { label:'🥦 Fruits & Veg', products:[
+      { name:'Fresh Apples 1kg', price:180, img:'🍎' },
+      { name:'Bananas (Dozen)', price:60, img:'🍌' },
+      { name:'Tomatoes 1kg', price:40, img:'🍅' },
+      { name:'Onions 1kg', price:35, img:'🧅' },
+    ]},
+    provisions: { label:'🛒 Provisions', products:[
+      { name:'Basmati Rice 5kg', price:450, img:'🍚' },
+      { name:'Toor Dal 1kg', price:165, img:'🫘' },
+      { name:'Sunflower Oil 1L', price:145, img:'🛢️' },
+      { name:'Sugar 1kg', price:48, img:'🧂' },
+    ]},
+  };
+
+  const QUICKMART_PRODUCTS = [
+    { name:'Wireless Mouse', price:499, img:'🖱️' },
+    { name:'Notebook Set (3pc)', price:150, img:'📓' },
+    { name:'Desk Lamp LED', price:799, img:'💡' },
+    { name:'Water Bottle 1L', price:299, img:'🍶' },
+    { name:'Phone Stand', price:349, img:'📱' },
+  ];
+
+  // ═══════════════════════════════════════════
+  // SHARED STATE
+  // ═══════════════════════════════════════════
+  let topMode = 'offline'; // 'offline' | 'online'
   let business = null;
+  let onlineSite = null; // 'shopease' | 'quickmart'
+  let shopCategory = 'toys';
   let cart = [];
-  let step = 'home'; // 'home' | 'build' | 'pay' | 'qr-upi' | 'qr-cash-confirm' | 'qr-cash' | 'done'
+  let step = 'home';
   let payMethod = null;
   let pendingFingerprint = null;
   let showCustomForm = false;
@@ -2624,9 +2780,7 @@ var qrcode = function() {
     bc.onmessage = (e) => {
       if (e.data && e.data.type === 'bill_confirmed' && e.data.bill) {
         const fp = billFingerprint(e.data.bill);
-        if (fp === pendingFingerprint) {
-          showDoneScreen(e.data.bill, { auto:true });
-        }
+        if (fp === pendingFingerprint) showDoneScreen(e.data.bill, { auto:true });
       }
     };
   }
@@ -2636,28 +2790,78 @@ var qrcode = function() {
   const CAPTIONS = {
     idle: "Pick a business on the left to see its checkout — a grocery store, a movie/event booking counter, or a bus/flight ticketing counter. All three end the same way: choose WhatsApp Pay or Cash, then a QR carries the bill into PAYCEIPT's Currency tab — where payment must be confirmed with a PIN before it's saved.",
     upi: "<b>WhatsApp Pay flow:</b> scanning this QR opens PAYCEIPT with the amount ready — it isn't paid yet. The customer taps Pay and enters their WhatsApp Pay PIN (<b>2504</b> in this demo). Only after that succeeds does the bill get saved and this screen shows it as complete.",
-    cash: "<b>Cash flow:</b> money already changed hands at the counter, so scanning this QR just needs a confirm tap (no PIN) to save the digital bill into WhatsApp's Currency tab."
+    cash: "<b>Cash flow:</b> money already changed hands at the counter, so scanning this QR just needs a confirm tap (no PIN) to save the digital bill into WhatsApp's Currency tab.",
+    idleOnline: "Pick an online site to see how its checkout behaves. ShopEase has integrated PAYCEIPT — WhatsApp Pay sits right at checkout. QuickMart hasn't — you'll see what happens instead.",
+    shopease: "<b>ShopEase has integrated PAYCEIPT.</b> WhatsApp Pay sits right in checkout, next to Card, Net Banking, UPI and Cash on Delivery. Choosing it is what routes the itemised bill into WhatsApp — any other method just emails a receipt, the old way.",
+    quickmart: "<b>QuickMart hasn't integrated PAYCEIPT.</b> There's no WhatsApp Pay at checkout — payment works the old way, and the invoice arrives by email as a PDF. PAYCEIPT can still read that PDF and offer to move it into your Currency tab once you download it.",
+    whatsappPayOnline: "<b>WhatsApp Pay at online checkout:</b> tapping it opens WhatsApp directly on the same phone, or can be scanned from a second device to confirm with the PIN. The moment payment succeeds, the itemised bill lands in the Currency tab automatically."
   };
 
-  // ── HOME: business selector ──
+  // ═══════════════════════════════════════════
+  // TOP MODE SWITCH
+  // ═══════════════════════════════════════════
+  function switchTopMode(mode){
+    topMode = mode;
+    document.getElementById('modeTabOffline').classList.toggle('active', mode === 'offline');
+    document.getElementById('modeTabOnline').classList.toggle('active', mode === 'online');
+    goHome();
+  }
+
+  function currentMerchantInfo(){
+    if (topMode === 'offline') {
+      const b = BUSINESSES[business];
+      return { name: b.name, category: b.category };
+    }
+    if (onlineSite === 'shopease') return { name: 'ShopEase', category: 'Shop' };
+    if (onlineSite === 'quickmart') return { name: 'QuickMart', category: 'Shop' };
+    return { name: 'Unknown', category: 'Shop' };
+  }
+
+  function currentMerchantIcon(){
+    if (topMode === 'offline' && business) return BUSINESSES[business].icon;
+    if (onlineSite === 'shopease') return '🛍️';
+    if (onlineSite === 'quickmart') return '📦';
+    return '🧾';
+  }
+
+  function resetCurrentOrder(){
+    if (topMode === 'offline' && business) selectBusiness(business);
+    else if (onlineSite) selectOnlineSite(onlineSite);
+    else goHome();
+  }
+
+  // ── HOME: business / site selector ──
   function homeHTML(){
-    return Object.keys(BUSINESSES).map(key => {
-      const b = BUSINESSES[key];
-      const desc = key === 'store' ? 'Grocery & retail checkout' : (key === 'events' ? 'Movie & event ticketing' : 'Bus & flight ticketing');
-      return `<div class="biz-card" onclick="selectBusiness('${key}')">
-        <div class="bi">${b.icon}</div>
-        <div class="bt"><div class="bn">${b.name}</div><div class="bd">${desc}</div></div>
+    if (topMode === 'offline') {
+      return Object.keys(BUSINESSES).map(key => {
+        const b = BUSINESSES[key];
+        const desc = key === 'store' ? 'Grocery & retail checkout' : (key === 'events' ? 'Movie & event ticketing' : 'Bus & flight ticketing');
+        return `<div class="biz-card" onclick="selectBusiness('${key}')">
+          <div class="bi">${b.icon}</div>
+          <div class="bt"><div class="bn">${b.name}</div><div class="bd">${desc}</div></div>
+          <div class="bc">›</div>
+        </div>`;
+      }).join('');
+    }
+    return `
+      <div class="biz-card" onclick="selectOnlineSite('shopease')">
+        <span class="bbadge ready">✅ WHATSAPP PAY READY</span>
+        <div class="bi">🛍️</div>
+        <div class="bt"><div class="bn">ShopEase</div><div class="bd">Electronics, toys, clothes, groceries &amp; more</div></div>
         <div class="bc">›</div>
-      </div>`;
-    }).join('');
+      </div>
+      <div class="biz-card" onclick="selectOnlineSite('quickmart')">
+        <span class="bbadge email">✉️ EMAIL RECEIPTS ONLY</span>
+        <div class="bi">📦</div>
+        <div class="bt"><div class="bn">QuickMart</div><div class="bd">Hasn't integrated PAYCEIPT yet</div></div>
+        <div class="bc">›</div>
+      </div>
+    `;
   }
 
   function selectBusiness(key){
-    business = key;
-    cart = [];
-    step = 'build';
-    payMethod = null;
-    showCustomForm = false;
+    business = key; onlineSite = null;
+    cart = []; step = 'build'; payMethod = null; showCustomForm = false;
     travelFrom = ''; travelTo = ''; travelDate = TODAY; travelResults = null;
     eventDate = TODAY; eventSearch = '';
     const b = BUSINESSES[key];
@@ -2668,20 +2872,36 @@ var qrcode = function() {
     render();
   }
 
-  function goHome(){
-    business = null; cart = []; step = 'home'; payMethod = null; pendingFingerprint = null;
-    document.getElementById('posStoreLabel').textContent = '🧾 Select a Business';
-    document.getElementById('posModeLabel').textContent = "Choose where you're checking out";
+  function selectOnlineSite(key){
+    onlineSite = key; business = null;
+    cart = []; step = 'browse'; payMethod = null; shopCategory = 'toys';
+    document.getElementById('posStoreLabel').textContent = key === 'shopease' ? '🛍️ ShopEase' : '📦 QuickMart';
+    document.getElementById('posModeLabel').textContent = key === 'shopease' ? 'Online Checkout' : 'Online Checkout · No WhatsApp Pay';
     updateBreadcrumb();
-    flowCaption.innerHTML = CAPTIONS.idle;
+    flowCaption.innerHTML = key === 'shopease' ? CAPTIONS.shopease : CAPTIONS.quickmart;
+    render();
+  }
+
+  function goHome(){
+    business = null; onlineSite = null; cart = []; step = 'home'; payMethod = null; pendingFingerprint = null;
+    document.getElementById('posStoreLabel').textContent = topMode === 'offline' ? '🧾 Select a Business' : '🛒 Select a Site';
+    document.getElementById('posModeLabel').textContent = topMode === 'offline' ? "Choose where you're checking out" : "Choose which online site to shop";
+    updateBreadcrumb();
+    flowCaption.innerHTML = topMode === 'offline' ? CAPTIONS.idle : CAPTIONS.idleOnline;
     resetPhone();
     render();
   }
 
   function updateBreadcrumb(){
-    if (!business){ breadcrumb.innerHTML = '<span>Choose a business to simulate its checkout →</span>'; return; }
-    const b = BUSINESSES[business];
-    breadcrumb.innerHTML = `<button onclick="goHome()">🏠 All businesses</button><span>Now at: <b>${b.icon} ${b.name}</b></span>`;
+    if (topMode === 'offline') {
+      if (!business){ breadcrumb.innerHTML = '<span>Choose a business to simulate its checkout →</span>'; return; }
+      const b = BUSINESSES[business];
+      breadcrumb.innerHTML = `<button onclick="goHome()">🏠 All businesses</button><span>Now at: <b>${b.icon} ${b.name}</b></span>`;
+    } else {
+      if (!onlineSite){ breadcrumb.innerHTML = '<span>Choose an online site to simulate its checkout →</span>'; return; }
+      const name = onlineSite === 'shopease' ? '🛍️ ShopEase' : '📦 QuickMart';
+      breadcrumb.innerHTML = `<button onclick="goHome()">🏠 All sites</button><span>Now at: <b>${name}</b></span>`;
+    }
   }
 
   function resetPhone(){
@@ -2691,7 +2911,9 @@ var qrcode = function() {
     connectorLabel.textContent = 'Waiting for sale to complete…';
   }
 
-  // ── BUILD: cart / catalog ──
+  // ═══════════════════════════════════════════
+  // SHARED CART HELPERS
+  // ═══════════════════════════════════════════
   function cartTotal(){ return cart.reduce((s,i)=>s+i.price*i.qty,0); }
 
   function addItem(name, price){
@@ -2701,19 +2923,14 @@ var qrcode = function() {
     render();
   }
 
-  function addCustomItem(){
-    const nameInput = document.getElementById('itemNameInput');
-    const priceInput = document.getElementById('itemPriceInput');
-    const name = nameInput.value.trim();
-    const price = parseFloat(priceInput.value);
-    if (!name || !price || price <= 0) return;
-    cart.push({ name, price, qty:1 });
-    nameInput.value = ''; priceInput.value = '';
+  function removeItem(idx){
+    cart.splice(idx,1);
     render();
   }
 
-  function removeItem(idx){
-    cart.splice(idx,1);
+  function stepQty(idx, delta){
+    cart[idx].qty += delta;
+    if (cart[idx].qty <= 0) cart.splice(idx,1);
     render();
   }
 
@@ -2731,11 +2948,13 @@ var qrcode = function() {
       <div class="cart-list">${rows}</div>
       <div class="cart-total"><span>Total</span><span>₹${cartTotal()}</span></div>
       <button class="pos-btn" ${cart.length===0 ? 'disabled' : ''} onclick="proceedToPayment()">✅ ${business==='store' ? 'Complete Sale' : 'Proceed to Payment'}</button>
-      <div class="reset-link"><button onclick="selectBusiness(business)">↺ Reset this order</button></div>
+      <div class="reset-link"><button onclick="resetCurrentOrder()">↺ Reset this order</button></div>
     `;
   }
 
-  // ── business-specific builders ──
+  // ═══════════════════════════════════════════
+  // OFFLINE: business-specific builders (unchanged logic)
+  // ═══════════════════════════════════════════
   function storeBuildHTML(){
     const b = BUSINESSES.store;
     const chips = b.presets.map(p => `<button class="preset-chip" onclick="addItem('${p.name.replace(/'/g,"\\'")}', ${p.price})">+ ${p.name} · ₹${p.price}</button>`).join('');
@@ -2750,6 +2969,17 @@ var qrcode = function() {
       </div>
       ${cartListHTML('Current bill')}
     `;
+  }
+
+  function addCustomItem(){
+    const nameInput = document.getElementById('itemNameInput');
+    const priceInput = document.getElementById('itemPriceInput');
+    const name = nameInput.value.trim();
+    const price = parseFloat(priceInput.value);
+    if (!name || !price || price <= 0) return;
+    cart.push({ name, price, qty:1 });
+    nameInput.value = ''; priceInput.value = '';
+    render();
   }
 
   function eventsBuildHTML(){
@@ -2862,7 +3092,7 @@ var qrcode = function() {
     render();
   }
 
-  function buildHTML(){
+  function offlineBuildHTML(){
     if (business === 'store') return storeBuildHTML();
     if (business === 'events') return eventsBuildHTML();
     if (business === 'travel') return travelBuildHTML();
@@ -2875,7 +3105,6 @@ var qrcode = function() {
     render();
   }
 
-  // ── PAY: choose method ──
   function payHTML(){
     return `
       <div class="cart-total" style="border-top:none; padding-top:0;"><span>Amount Due</span><span>₹${cartTotal()}</span></div>
@@ -2884,7 +3113,7 @@ var qrcode = function() {
         <button class="pos-btn wa" onclick="chooseMethod('UPI')">💬 WhatsApp Pay (UPI)</button>
         <button class="pos-btn gold" onclick="chooseMethod('Cash')">💵 Cash</button>
       </div>
-      <div class="reset-link" style="margin-top:auto;"><button onclick="selectBusiness(business)">↺ Reset this order</button></div>
+      <div class="reset-link" style="margin-top:auto;"><button onclick="resetCurrentOrder()">↺ Reset this order</button></div>
     `;
   }
 
@@ -2900,13 +3129,13 @@ var qrcode = function() {
   }
 
   function buildBillPayload(method){
-    const b = BUSINESSES[business];
+    const info = currentMerchantInfo();
     return {
-      s: b.name,
+      s: info.name,
       i: cart.map(i => [i.name, i.price, i.qty]),
       t: cartTotal(),
       m: method,
-      c: b.category,
+      c: info.category,
       ts: Date.now()
     };
   }
@@ -2920,6 +3149,7 @@ var qrcode = function() {
 
   function renderRealQR(containerId, url){
     const el = document.getElementById(containerId);
+    if (!el) return;
     el.innerHTML = '';
     try {
       const qr = qrcode(0, 'M');
@@ -2931,7 +3161,7 @@ var qrcode = function() {
     }
   }
 
-  // ── QR screens ──
+  // ── OFFLINE QR screens ──
   function qrUpiHTML(){
     const { url } = buildBillURL('UPI');
     setTimeout(()=> renderRealQR('qrRealPayment', url), 0);
@@ -2945,9 +3175,9 @@ var qrcode = function() {
         <div class="qr-caption">Scan to Pay ₹${cartTotal()}</div>
         <div class="qr-sub">Scan with the PAYCEIPT app's camera on another phone</div>
         <div class="status-line waiting"><span class="dot"></span>Waiting for payment confirmation…</div>
-        <button class="pos-btn secondary" style="margin-top:10px;" onclick="manualConfirm()">✅ I've completed payment on my phone</button>
+        <button class="pos-btn secondary" style="margin-top:10px;" onclick="manualConfirm()">✅ Confirm &amp; Save (Demo Shortcut)</button>
       </div>
-      <div class="reset-link" style="margin-top:auto;"><button onclick="selectBusiness(business)">↺ Reset this order</button></div>
+      <div class="reset-link" style="margin-top:auto;"><button onclick="resetCurrentOrder()">↺ Reset this order</button></div>
     `;
   }
 
@@ -2955,7 +3185,7 @@ var qrcode = function() {
     return `
       <div class="cart-total" style="border-top:none;padding-top:0;"><span>Amount</span><span>₹${cartTotal()}</span></div>
       <button class="pos-btn gold" style="margin-top:14px;" onclick="confirmCash()">💵 Confirm Cash Received</button>
-      <div class="reset-link" style="margin-top:auto;"><button onclick="selectBusiness(business)">↺ Reset this order</button></div>
+      <div class="reset-link" style="margin-top:auto;"><button onclick="resetCurrentOrder()">↺ Reset this order</button></div>
     `;
   }
 
@@ -2977,19 +3207,366 @@ var qrcode = function() {
         <div class="qr-caption">Open the PAYCEIPT app &amp; scan</div>
         <div class="qr-sub">Scan with the PAYCEIPT app's camera on another phone</div>
         <div class="status-line waiting"><span class="dot"></span>Waiting for bill to be saved…</div>
-        <button class="pos-btn secondary" style="margin-top:10px;" onclick="manualConfirm()">✅ I've saved it on my phone</button>
+        <button class="pos-btn secondary" style="margin-top:10px;" onclick="manualConfirm()">✅ Confirm &amp; Save (Demo Shortcut)</button>
       </div>
-      <div class="reset-link" style="margin-top:auto;"><button onclick="selectBusiness(business)">↺ Reset this order</button></div>
+      <div class="reset-link" style="margin-top:auto;"><button onclick="resetCurrentOrder()">↺ Reset this order</button></div>
     `;
   }
 
   function manualConfirm(){
     const bill = buildBillPayload(payMethod);
     bill.ts = parseInt(pendingFingerprint.split('|')[2], 10) || bill.ts;
+    persistBillDirectly(bill);
     showDoneScreen(bill, { auto:false });
   }
 
-  // ── DONE screen (shown once payment/bill-save is confirmed, real or manual) ──
+  // Writes the bill (and, for movie/event/travel bookings, matching wallet passes)
+  // straight into the SAME localStorage the real app reads — this is what makes the
+  // "Confirm & Save" shortcut actually work even when nobody scans a QR with a second
+  // device. Also live-pushes to any index.html tab open in this same browser.
+  function persistBillDirectly(bill){
+    const fp = billFingerprint(bill);
+    try {
+      const saved = JSON.parse(localStorage.getItem('payceipt_bills') || '[]');
+      if (!saved.some(b => billFingerprint(b) === fp)) {
+        saved.unshift(bill);
+        localStorage.setItem('payceipt_bills', JSON.stringify(saved.slice(0,50)));
+      }
+    } catch(e) {}
+
+    if ((bill.c === 'Fun' || bill.c === 'Travel') && bill.i && bill.i.length) {
+      try {
+        const wallet = JSON.parse(localStorage.getItem('payceipt_wallet') || '[]');
+        if (!wallet.some(p => p.billFp === fp)) {
+          const passes = bill.i.map(item => ({
+            id: 'PC-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2,6).toUpperCase(),
+            billFp: fp,
+            title: item[0],
+            qty: item[2],
+            store: bill.s,
+            category: bill.c,
+            ts: bill.ts,
+            holder: 'T.B. Praveen'
+          }));
+          passes.forEach(p => wallet.unshift(p));
+          localStorage.setItem('payceipt_wallet', JSON.stringify(wallet.slice(0,100)));
+        }
+      } catch(e) {}
+    }
+
+    if (bc) { try { bc.postMessage({ type:'bill_saved_direct', bill }); } catch(e){} }
+  }
+
+  // ═══════════════════════════════════════════
+  // ONLINE: ShopEase (PAYCEIPT-integrated)
+  // ═══════════════════════════════════════════
+  function shopEaseBrowseHTML(){
+    const cat = SHOPEASE_CATEGORIES[shopCategory];
+    const chips = Object.keys(SHOPEASE_CATEGORIES).map(k =>
+      `<button class="cat-chip ${k===shopCategory?'active':''}" onclick="setShopCategory('${k}')">${SHOPEASE_CATEGORIES[k].label}</button>`
+    ).join('');
+
+    const products = cat.products.map((p,idx) => {
+      const warrantyHtml = p.warranty ? `<div class="prod-warranty">🛡️ ${p.warranty}</div>` : '';
+      const sizeHtml = p.sizes ? `<div class="prod-size-row"><select id="size-${shopCategory}-${idx}">${p.sizes.map(s=>`<option>${s}</option>`).join('')}</select></div>` : '';
+      return `<div class="prod-card">
+        <div class="prod-img">${p.img}</div>
+        <div class="prod-name">${p.name}</div>
+        <div class="prod-price">₹${p.price}</div>
+        ${warrantyHtml}
+        ${sizeHtml}
+        <button class="prod-add-btn" onclick="addShopProduct('${shopCategory}',${idx})">+ Add to Cart</button>
+      </div>`;
+    }).join('');
+
+    const itemCount = cart.reduce((s,i)=>s+i.qty,0);
+    const cartBar = cart.length ? `<div class="sticky-cart-bar" onclick="goToCartReview()"><span class="scb-left">🛒 ${itemCount} item${itemCount>1?'s':''}</span><span class="scb-right">₹${cartTotal()} · View Cart ›</span></div>` : '';
+
+    return `
+      <div class="shop-header">
+        <input class="shop-search" placeholder="🔍 Search ShopEase…" disabled>
+        <button class="shop-cart-btn" onclick="goToCartReview()">🛒${cart.length?`<span class="shop-cart-badge">${itemCount}</span>`:''}</button>
+      </div>
+      <div class="cat-chip-row">${chips}</div>
+      <div class="prod-grid">${products}</div>
+      ${cartBar}
+    `;
+  }
+
+  function setShopCategory(k){ shopCategory = k; render(); }
+
+  function addShopProduct(catKey, idx){
+    const p = SHOPEASE_CATEGORIES[catKey].products[idx];
+    let name = p.name;
+    if (p.sizes) {
+      const sel = document.getElementById(`size-${catKey}-${idx}`);
+      if (sel) name += ` (Size: ${sel.value})`;
+    }
+    if (p.warranty) name += ` [🛡️ ${p.warranty}]`;
+    addItem(name, p.price);
+    showToast(`✅ Added: ${p.name}`);
+  }
+
+  function goToCartReview(){ step = 'cart'; render(); }
+  function backToBrowse(){ step = 'browse'; render(); }
+
+  function cartReviewHTML(){
+    const rows = cart.length ? cart.map((i,idx)=>`
+      <div class="cart-review-row">
+        <div><div class="crn">${i.name}</div><div class="crs">₹${i.price} each</div></div>
+        <div class="qty-stepper">
+          <button onclick="stepQty(${idx},-1)">−</button>
+          <span>${i.qty}</span>
+          <button onclick="stepQty(${idx},1)">+</button>
+        </div>
+        <div style="font-weight:800;margin-left:10px;">₹${i.price*i.qty}</div>
+      </div>`).join('') : '<div class="cart-empty">Your cart is empty</div>';
+
+    return `
+      <div class="sec-label" style="padding:0 0 8px;">🛒 Your Cart</div>
+      ${rows}
+      <div class="cart-total"><span>Total</span><span>₹${cartTotal()}</span></div>
+      <button class="pos-btn" ${cart.length===0?'disabled':''} onclick="goToCheckout()">Proceed to Checkout</button>
+      <div class="reset-link"><button onclick="backToBrowse()">← Continue Shopping</button></div>
+    `;
+  }
+
+  function goToCheckout(){
+    if (cart.length === 0) return;
+    step = 'checkout';
+    render();
+  }
+
+  function shopCheckoutHTML(){
+    return `
+      <div class="sec-label" style="padding:0 0 8px;">Order Summary</div>
+      <div class="cart-total" style="border-top:none;"><span>Total (${cart.reduce((s,i)=>s+i.qty,0)} items)</span><span>₹${cartTotal()}</span></div>
+      <div class="sec-label" style="padding:14px 0 8px;">Choose Payment Method</div>
+      <div class="pay-method-card highlight" onclick="chooseOnlinePayment('WhatsAppPay')">
+        <div class="pm-icon">💬</div>
+        <div class="pm-body">
+          <div class="pm-name">WhatsApp Pay <span class="pm-new">NEW</span></div>
+          <div class="pm-sub">Pay &amp; receive all your bills in one place — automatically in your WhatsApp Currency tab.</div>
+        </div>
+      </div>
+      <div class="pay-method-card" onclick="chooseOnlinePayment('Card')">
+        <div class="pm-icon">💳</div>
+        <div class="pm-body"><div class="pm-name">Credit / Debit Card</div><div class="pm-sub">Visa, Mastercard, RuPay</div></div>
+      </div>
+      <div class="pay-method-card" onclick="chooseOnlinePayment('NetBanking')">
+        <div class="pm-icon">🏦</div>
+        <div class="pm-body"><div class="pm-name">Net Banking</div><div class="pm-sub">All major banks</div></div>
+      </div>
+      <div class="pay-method-card" onclick="chooseOnlinePayment('UPI')">
+        <div class="pm-icon">📱</div>
+        <div class="pm-body"><div class="pm-name">UPI Apps</div><div class="pm-sub">Other UPI apps</div></div>
+      </div>
+      <div class="pay-method-card" onclick="chooseOnlinePayment('COD')">
+        <div class="pm-icon">💵</div>
+        <div class="pm-body"><div class="pm-name">Cash on Delivery</div><div class="pm-sub">Pay when you receive</div></div>
+      </div>
+      <div class="reset-link"><button onclick="goToCartReview()">← Back to Cart</button></div>
+    `;
+  }
+
+  function chooseOnlinePayment(method){
+    if (method === 'WhatsAppPay') {
+      step = 'wa-pay';
+      render();
+    } else {
+      step = 'order-placed';
+      render();
+    }
+  }
+
+  function onlineWaPayHTML(){
+    const { url } = buildBillURL('UPI');
+    setTimeout(()=> renderRealQR('qrRealPayment', url), 0);
+    connectorLabel.textContent = 'Payment link ready — pay to confirm';
+    flowCaption.innerHTML = CAPTIONS.whatsappPayOnline;
+    return `
+      <div class="cart-total" style="border-top:none;padding-top:0;"><span>Amount</span><span>₹${cartTotal()}</span></div>
+      <div class="qr-block">
+        <div class="qr-real-wrap payment" id="qrRealPayment"></div>
+        <div class="qr-badge payment" style="display:inline-block;">WHATSAPP PAY</div>
+        <div class="qr-caption">Pay ₹${cartTotal()} via WhatsApp Pay</div>
+        <div class="qr-sub">Same phone? Tap below. Testing cross-device? Scan the QR.</div>
+        <a href="${url}" target="_blank" class="pos-btn" style="display:block;text-decoration:none;text-align:center;">💬 Open in WhatsApp App</a>
+        <div class="status-line waiting" style="margin-top:10px;"><span class="dot"></span>Waiting for payment confirmation…</div>
+        <button class="pos-btn secondary" style="margin-top:10px;" onclick="manualConfirm()">✅ Confirm &amp; Save (Demo Shortcut)</button>
+      </div>
+      <div class="reset-link" style="margin-top:auto;"><button onclick="resetCurrentOrder()">↺ Reset this order</button></div>
+    `;
+  }
+
+  function orderPlacedHTML(){
+    return `
+      <div class="order-placed-wrap">
+        <div class="op-ico">✅</div>
+        <div class="op-title">Order Placed!</div>
+        <div class="op-sub">Your order of ₹${cartTotal()} is confirmed.<br>A confirmation has been sent to your email.</div>
+        <div class="op-compare">💡 Next time, choose <b>WhatsApp Pay</b> at checkout — your itemised bill lands automatically in your Currency tab, no digging through your inbox.</div>
+        <div class="done-btn-row" style="margin-top:16px;">
+          <button class="pos-btn secondary" onclick="backToBrowse()">🛍️ Continue Shopping</button>
+          <button class="pos-btn" onclick="goHome()">🏠 Home</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // ═══════════════════════════════════════════
+  // ONLINE: QuickMart (not integrated — email/PDF path)
+  // ═══════════════════════════════════════════
+  function quickMartBrowseHTML(){
+    const rows = QUICKMART_PRODUCTS.map((p) => `
+      <div class="catalog-row">
+        <div><div class="cn">${p.img} ${p.name}</div><div class="cp">₹${p.price}</div></div>
+        <button onclick="addItem('${p.name.replace(/'/g,"\\'")}', ${p.price})">+ Add</button>
+      </div>`).join('');
+    const itemCount = cart.reduce((s,i)=>s+i.qty,0);
+    const cartBar = cart.length ? `<div class="sticky-cart-bar" onclick="goToCartReview()"><span class="scb-left">🛒 ${itemCount} item${itemCount>1?'s':''}</span><span class="scb-right">₹${cartTotal()} · View Cart ›</span></div>` : '';
+    return `
+      <div class="site-badge-nonintegrated">⚠️ QuickMart hasn't adopted PAYCEIPT's terms yet — no WhatsApp Pay at checkout. You'll get a traditional email receipt instead.</div>
+      ${rows}
+      ${cartBar}
+    `;
+  }
+
+  function quickMartCheckoutHTML(){
+    return `
+      <div class="sec-label" style="padding:0 0 8px;">Order Summary</div>
+      <div class="cart-total" style="border-top:none;"><span>Total</span><span>₹${cartTotal()}</span></div>
+      <div class="sec-label" style="padding:14px 0 8px;">Choose Payment Method</div>
+      <div class="pay-method-card" onclick="quickMartPlaceOrder()"><div class="pm-icon">💳</div><div class="pm-body"><div class="pm-name">Credit / Debit Card</div></div></div>
+      <div class="pay-method-card" onclick="quickMartPlaceOrder()"><div class="pm-icon">🏦</div><div class="pm-body"><div class="pm-name">Net Banking</div></div></div>
+      <div class="pay-method-card" onclick="quickMartPlaceOrder()"><div class="pm-icon">📱</div><div class="pm-body"><div class="pm-name">UPI Apps</div></div></div>
+      <div class="pay-method-card" onclick="quickMartPlaceOrder()"><div class="pm-icon">💵</div><div class="pm-body"><div class="pm-name">Cash on Delivery</div></div></div>
+      <div class="reset-link"><button onclick="goToCartReview()">← Back to Cart</button></div>
+    `;
+  }
+
+  function quickMartPlaceOrder(){
+    step = 'order-placed-email';
+    render();
+  }
+
+  function orderPlacedEmailHTML(){
+    return `
+      <div class="order-placed-wrap">
+        <div class="op-ico">✅</div>
+        <div class="op-title">Order Placed!</div>
+        <div class="op-sub">Your order of ₹${cartTotal()} is confirmed.<br>📧 A confirmation email with your invoice is on its way.</div>
+        <button class="pos-btn" style="margin-top:16px;" onclick="openInbox()">📬 Check Email Inbox</button>
+      </div>
+    `;
+  }
+
+  function openInbox(){ step = 'inbox'; render(); }
+
+  function inboxHTML(){
+    return `
+      <div class="sec-label" style="padding:0 0 8px;">📬 Inbox</div>
+      <div class="inbox-item" onclick="openEmail()">
+        <div class="ii-dot"></div>
+        <div class="ii-ico">📧</div>
+        <div class="ii-body">
+          <div class="ii-from">QuickMart Orders</div>
+          <div class="ii-subj">Your Order Confirmation 🧾 — Invoice Attached</div>
+          <div class="ii-time">Just now</div>
+        </div>
+      </div>
+      <div class="reset-link"><button onclick="goHome()">🏠 Home</button></div>
+    `;
+  }
+
+  function openEmail(){ step = 'email-view'; render(); }
+
+  function emailViewHTML(){
+    return `
+      <div class="email-view">
+        <div class="ev-subj">🧾 Your Order Confirmation — Invoice Attached</div>
+        <div class="ev-meta">From: orders@quickmart.example · Just now</div>
+        <div class="ev-body">Hi Praveen,<br><br>Thank you for shopping with QuickMart! Your order of ₹${cartTotal()} has been confirmed. Please find your invoice attached as a PDF.<br><br>— QuickMart Team</div>
+        <div class="pdf-attachment" onclick="downloadInvoice()">
+          <div class="pa-ico">📄</div>
+          <div class="pa-body"><div class="pa-name">Invoice_QuickMart.pdf</div><div class="pa-size">148 KB</div></div>
+          <div class="pa-dl">⬇</div>
+        </div>
+      </div>
+      <div class="reset-link"><button onclick="openInbox()">← Back to Inbox</button></div>
+    `;
+  }
+
+  function downloadInvoice(){
+    step = 'downloading';
+    render();
+    setTimeout(() => {
+      const fill = document.getElementById('dlFill');
+      if (fill) fill.style.width = '100%';
+    }, 100);
+    setTimeout(() => {
+      step = 'move-prompt';
+      render();
+    }, 1400);
+  }
+
+  function downloadingHTML(){
+    return `
+      <div class="order-placed-wrap">
+        <div class="op-ico">📥</div>
+        <div class="op-title">Downloading Invoice_QuickMart.pdf…</div>
+        <div class="download-progress"><div class="download-progress-fill" id="dlFill"></div></div>
+      </div>
+    `;
+  }
+
+  function movePromptHTML(){
+    return `
+      <div class="move-prompt-card">
+        <div class="mp-ico">📲</div>
+        <div class="mp-title">Move this bill to WhatsApp?</div>
+        <div class="mp-sub">PAYCEIPT can read this PDF and save an itemised digital bill straight into your Currency tab.</div>
+        <div class="move-btn-row">
+          <button class="pos-btn secondary" onclick="declineMove()">Not now</button>
+          <button class="pos-btn" onclick="acceptMove()">✅ Move to WhatsApp</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function declineMove(){
+    showToast('📄 PDF saved to Downloads. You can move it anytime.');
+    goHome();
+  }
+
+  function acceptMove(){
+    step = 'move-qr';
+    render();
+  }
+
+  function moveQrHTML(){
+    payMethod = 'Email';
+    const { url } = buildBillURL('Email');
+    connectorLabel.textContent = 'Bill ready — open it in WhatsApp';
+    setTimeout(()=> renderRealQR('qrRealBill', url), 0);
+    return `
+      <div class="status-line"><span class="dot"></span>Invoice read — itemised bill ready</div>
+      <div class="qr-block">
+        <div class="qr-real-wrap bill" id="qrRealBill"></div>
+        <div class="qr-badge bill" style="display:inline-block;">SCAN OR OPEN IN WHATSAPP</div>
+        <div class="qr-caption">Move to Currency Tab</div>
+        <div class="qr-sub">Same phone? Tap below. Testing cross-device? Scan the QR.</div>
+        <a href="${url}" target="_blank" class="pos-btn" style="display:block;text-decoration:none;text-align:center;">📲 Open in WhatsApp App</a>
+        <div class="status-line waiting" style="margin-top:10px;"><span class="dot"></span>Waiting for confirmation…</div>
+        <button class="pos-btn secondary" style="margin-top:10px;" onclick="manualConfirm()">✅ Confirm &amp; Save (Demo Shortcut)</button>
+      </div>
+      <div class="reset-link"><button onclick="goHome()">🏠 Home</button></div>
+    `;
+  }
+
+  // ═══════════════════════════════════════════
+  // COMPLETION SCREEN (shared by every flow)
+  // ═══════════════════════════════════════════
   function showDoneScreen(bill, opts){
     step = 'done';
     flyDocument();
@@ -3010,7 +3587,7 @@ var qrcode = function() {
           <div class="eco-box"><div class="ev">${treesN}</div><div class="el">🌳 TREES SAVED</div></div>
         </div>
         <div class="done-btn-row">
-          <button class="pos-btn secondary" onclick="selectBusiness(business)">🆕 New Order</button>
+          <button class="pos-btn secondary" onclick="resetCurrentOrder()">🆕 New Order</button>
           <button class="pos-btn" onclick="goHome()">🏠 Home</button>
         </div>
       </div>
@@ -3034,8 +3611,8 @@ var qrcode = function() {
     row.className = 'bill-row new-arrival';
     row.innerHTML = `
       <div>
-        <div class="bn">${BUSINESSES[business].icon} ${bill.s}</div>
-        <div class="bd">Just now · ${bill.m === 'UPI' ? 'Paid via WhatsApp Pay' : 'Paid in cash · digital bill'}</div>
+        <div class="bn">${currentMerchantIcon()} ${bill.s}</div>
+        <div class="bd">Just now · ${bill.m === 'UPI' ? 'Paid via WhatsApp Pay' : (bill.m === 'Email' ? 'Imported from email' : 'Paid in cash · digital bill')}</div>
       </div>
       <div class="ba">₹${bill.t}</div>
     `;
@@ -3061,14 +3638,73 @@ var qrcode = function() {
     setTimeout(()=> t.classList.remove('show'), 3600);
   }
 
+  // ═══════════════════════════════════════════
+  // MAIN RENDER DISPATCHER
+  // ═══════════════════════════════════════════
+  // ═══════════════════════════════════════════
+  // BACK NAVIGATION — consistent on every non-home, non-terminal screen
+  // ═══════════════════════════════════════════
+  function backBtnHTML(){
+    return `<button class="back-nav-btn" onclick="stepBack()">‹ Back</button>`;
+  }
+
+  function stepBack(){
+    if (topMode === 'offline') {
+      if (step === 'build') { goHome(); return; }
+      if (step === 'pay') { step = 'build'; render(); return; }
+      if (step === 'qr-upi' || step === 'qr-cash-confirm') { step = 'pay'; render(); return; }
+      if (step === 'qr-cash') { step = 'qr-cash-confirm'; render(); return; }
+    } else if (onlineSite === 'shopease') {
+      if (step === 'browse') { goHome(); return; }
+      if (step === 'cart') { step = 'browse'; render(); return; }
+      if (step === 'checkout') { step = 'cart'; render(); return; }
+      if (step === 'wa-pay') { step = 'checkout'; render(); return; }
+    } else if (onlineSite === 'quickmart') {
+      if (step === 'browse') { goHome(); return; }
+      if (step === 'cart') { step = 'browse'; render(); return; }
+      if (step === 'checkout') { step = 'cart'; render(); return; }
+      if (step === 'inbox') { goHome(); return; }
+      if (step === 'email-view') { step = 'inbox'; render(); return; }
+      if (step === 'move-prompt') { step = 'email-view'; render(); return; }
+      if (step === 'move-qr') { step = 'move-prompt'; render(); return; }
+    }
+    goHome();
+  }
+
+  // Steps that are terminal or transient don't get a back button — a completed
+  // payment or an auto-advancing animation shouldn't invite "going back".
+  const NO_BACK_STEPS = new Set(['home', 'done', 'order-placed', 'order-placed-email', 'downloading']);
+
   function render(){
-    if (step === 'home') posBody.innerHTML = homeHTML();
-    else if (step === 'build') posBody.innerHTML = buildHTML();
-    else if (step === 'pay') posBody.innerHTML = payHTML();
-    else if (step === 'qr-upi') posBody.innerHTML = qrUpiHTML();
-    else if (step === 'qr-cash-confirm') posBody.innerHTML = qrCashConfirmHTML();
-    else if (step === 'qr-cash') posBody.innerHTML = qrCashHTML();
-    // 'done' is rendered directly by showDoneScreen()
+    let html = '';
+
+    if (step === 'home') {
+      html = homeHTML();
+    } else if (topMode === 'offline') {
+      if (step === 'build') html = offlineBuildHTML();
+      else if (step === 'pay') html = payHTML();
+      else if (step === 'qr-upi') html = qrUpiHTML();
+      else if (step === 'qr-cash-confirm') html = qrCashConfirmHTML();
+      else if (step === 'qr-cash') html = qrCashHTML();
+    } else if (onlineSite === 'shopease') {
+      if (step === 'browse') html = shopEaseBrowseHTML();
+      else if (step === 'cart') html = cartReviewHTML();
+      else if (step === 'checkout') html = shopCheckoutHTML();
+      else if (step === 'wa-pay') html = onlineWaPayHTML();
+      else if (step === 'order-placed') html = orderPlacedHTML();
+    } else if (onlineSite === 'quickmart') {
+      if (step === 'browse') html = quickMartBrowseHTML();
+      else if (step === 'cart') html = cartReviewHTML();
+      else if (step === 'checkout') html = quickMartCheckoutHTML();
+      else if (step === 'order-placed-email') html = orderPlacedEmailHTML();
+      else if (step === 'inbox') html = inboxHTML();
+      else if (step === 'email-view') html = emailViewHTML();
+      else if (step === 'downloading') html = downloadingHTML();
+      else if (step === 'move-prompt') html = movePromptHTML();
+      else if (step === 'move-qr') html = moveQrHTML();
+    }
+
+    posBody.innerHTML = (NO_BACK_STEPS.has(step) ? '' : backBtnHTML()) + html;
   }
 
   function tickClock(){
@@ -3083,6 +3719,7 @@ var qrcode = function() {
 
   flowCaption.innerHTML = CAPTIONS.idle;
   render();
+
 </script>
 </body>
 </html>
